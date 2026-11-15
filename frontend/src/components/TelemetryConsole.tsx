@@ -490,11 +490,14 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
           <div className="bg-[#14171C] border border-white/10 p-6 space-y-5">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <span className="text-xs font-mono uppercase tracking-widest text-[#244CFF]">
-                Wearable Sensor Pairing & Telemetry
+                Sensor Input
               </span>
-              <span className="text-[10px] font-mono text-neutral-400">
-                GATT Bluetooth / Clinical Input
-              </span>
+              {isConnected && (
+                <span className="text-[10px] font-mono text-emerald-400 flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
+                  Connected
+                </span>
+              )}
             </div>
 
             {/* Bluetooth Connect Option */}

@@ -43,6 +43,8 @@ export default function Home() {
       setAlerts((prev) => prev.filter((a) => a.id !== id));
     } catch (err) {
       console.error('Failed to acknowledge alert:', err);
+      // Refresh from server in case of desync
+      checkHealthAndAlerts();
     }
   };
 
@@ -52,6 +54,7 @@ export default function Home() {
       setAlerts([]);
     } catch (err) {
       console.error('Failed to clear alerts:', err);
+      checkHealthAndAlerts();
     }
   };
 

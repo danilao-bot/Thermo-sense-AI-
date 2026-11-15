@@ -18,14 +18,16 @@ def get_active_alerts(db: Session = Depends(get_db)):
 
 @router.post("/clear-all")
 def clear_all_alerts(db: Session = Depends(get_db)):
-    """Marks all unacknowledged alerts as acknowledged or cleared."""
-    db.query(SafetyAlertModel).filter(SafetyAlertModel.acknowledged == False).update({"acknowledged": True})
+    """Marks all unacknowledged alerts as acknowledged (bulk clear)."""
+    count = db.query(SafetyAlertModel).filter(
+        SafetyAlertModel.acknowledged == False
+    ).update({"acknowledged": True}, synchronize_session="fetch")
     db.commit()
-    return {"message": "All alerts cleared successfully", "status": "ok"}
+    return {"message": f"{count} alert(s) cleared successfully", "cleared": count, "status": "ok"}
 
 @router.post("/{alert_id}/acknowledge", response_model=SafetyAlertResponse)
 def acknowledge_alert(alert_id: str, payload: AlertAcknowledgeRequest, db: Session = Depends(get_db)):
-    """Marks a safety alert as seen/acknowledged by a supervisor."""
+    """Marks a specific safety alert as seen/acknowledged by a supervisor."""
     alert = db.query(SafetyAlertModel).filter(SafetyAlertModel.id == alert_id).first()
     if not alert:
         raise HTTPException(status_code=404, detail="Alert not found.")
