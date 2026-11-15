@@ -23,34 +23,24 @@ export const Header: React.FC<HeaderProps> = ({
   backendOnline,
 }) => {
   return (
-    <header className="border-b border-white/10 bg-[#0D0F12]/80 backdrop-blur-md sticky top-0 z-50 px-6 lg:px-12 py-4">
+    <header className="border-b border-white/10 bg-[#0D0F12] sticky top-0 z-50 px-6 lg:px-12 py-4">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Brand Lockup */}
-        <div className="flex items-center gap-4">
-          <div className="h-10 w-10 bg-[#244CFF] text-white flex items-center justify-center font-black tracking-tighter text-lg rounded-none shadow-[0_0_24px_rgba(36,76,255,0.4)]">
-            TS
-          </div>
-          <div>
-            <div className="flex items-center gap-3">
-              <span className="font-extrabold text-lg tracking-tight text-white uppercase font-display">
-                ThermoSense <span className="text-[#244CFF]">OS</span>
-              </span>
-              <span className="text-[11px] font-mono tracking-widest uppercase text-white/50 border border-white/10 px-2 py-0.5">
-                v1.0 CLINICAL
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-xs font-mono text-white/40 mt-0.5">
-              <span
-                className={`inline-block h-1.5 w-1.5 rounded-full ${
-                  backendOnline ? 'bg-[#10B981]' : 'bg-[#E72D49]'
-                }`}
-              />
-              <span>{backendOnline ? 'BACKEND 127.0.0.1:8000 LIVE' : 'DISCONNECTED'}</span>
-            </div>
-          </div>
+        {/* Clean Brand Lockup - Just THERMOSENSE */}
+        <div className="flex items-center gap-3">
+          <span className="font-extrabold text-xl tracking-tight text-white uppercase font-display">
+            THERMOSENSE
+          </span>
+          <span className="flex items-center gap-1.5 text-xs font-mono text-white/40 ml-2">
+            <span
+              className={`inline-block h-1.5 w-1.5 rounded-full ${
+                backendOnline ? 'bg-[#10B981]' : 'bg-[#E72D49]'
+              }`}
+            />
+            <span>{backendOnline ? 'Live' : 'Offline'}</span>
+          </span>
         </div>
 
-        {/* Tab Switcher - Clean, Sharp, No Fluff */}
+        {/* Clean Tab Switcher - Simple Human Labels */}
         <div className="flex items-center gap-1 bg-[#14171C] border border-white/10 p-1">
           <button
             onClick={() => setActiveTab('telemetry')}
@@ -60,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
           >
-            01 / Telemetry
+            Live Monitor
           </button>
           <button
             onClick={() => setActiveTab('environmental')}
@@ -70,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
           >
-            02 / Mode B Environment
+            Environment
           </button>
           <button
             onClick={() => setActiveTab('hydration')}
@@ -80,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
           >
-            03 / Hydration
+            Hydration
           </button>
           <button
             onClick={() => setActiveTab('workers')}
@@ -90,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
           >
-            04 / Roster
+            Workers
           </button>
         </div>
 
@@ -112,7 +102,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={openAlertsDrawer}
             className={`px-4 py-2 text-xs font-mono uppercase font-bold flex items-center gap-2 transition-all ${
               activeAlertCount > 0
-                ? 'bg-[#E72D49] text-white animate-pulse'
+                ? 'bg-[#E72D49] text-white'
                 : 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white'
             }`}
           >

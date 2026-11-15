@@ -106,6 +106,21 @@ export interface SafetyAlert {
   acknowledged: boolean;
 }
 
+export interface WeatherResponse {
+  latitude: number;
+  longitude: number;
+  air_temp_C: number;
+  relative_humidity_pct: number;
+  wind_speed_m_s: number;
+  solar_radiation_W_m2: number;
+  vapor_pressure_hpa: number;
+  wbgt_estimated_C: number;
+  source: string;
+  live_status: string;
+  city?: string;
+  error?: string;
+}
+
 export interface SystemHealth {
   status: string;
   database: string;

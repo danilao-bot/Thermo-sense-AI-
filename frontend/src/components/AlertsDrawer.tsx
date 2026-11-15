@@ -9,6 +9,7 @@ interface AlertsDrawerProps {
   onClose: () => void;
   alerts: SafetyAlert[];
   onAcknowledge: (id: string) => void;
+  onClearAll?: () => void;
 }
 
 export const AlertsDrawer: React.FC<AlertsDrawerProps> = ({
@@ -16,6 +17,7 @@ export const AlertsDrawer: React.FC<AlertsDrawerProps> = ({
   onClose,
   alerts,
   onAcknowledge,
+  onClearAll,
 }) => {
   if (!isOpen) return null;
 
@@ -27,15 +29,25 @@ export const AlertsDrawer: React.FC<AlertsDrawerProps> = ({
             <div className="flex items-center gap-2">
               <ShieldAlert className="h-5 w-5 text-[var(--cherry-red)]" />
               <h2 className="text-base font-bold text-[var(--porcelain)]">
-                Active Safety Incidents
+                Active Safety Incidents ({alerts.length})
               </h2>
             </div>
-            <button
-              onClick={onClose}
-              className="p-1 rounded-lg hover:bg-[var(--carbon-elevated)] text-neutral-400 hover:text-white"
-            >
-              <X className="h-5 w-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              {alerts.length > 0 && onClearAll && (
+                <button
+                  onClick={onClearAll}
+                  className="text-[11px] font-mono px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-neutral-300 hover:text-white"
+                >
+                  Clear All
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                className="p-1 rounded-lg hover:bg-[var(--carbon-elevated)] text-neutral-400 hover:text-white"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
           </div>
 
           <div className="space-y-3 overflow-y-auto max-h-[70vh] pr-1">

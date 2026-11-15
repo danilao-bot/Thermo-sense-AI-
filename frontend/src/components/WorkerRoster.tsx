@@ -204,10 +204,6 @@ export const WorkerRoster: React.FC<WorkerRosterProps> = ({ privacyMode }) => {
               </table>
             </div>
           </div>
-
-          <span className="text-[11px] font-mono text-white/30 pt-6 border-t border-white/10 block mt-6">
-            Database records protected by PostgreSQL Row-Level Security.
-          </span>
         </div>
       </div>
     </div>

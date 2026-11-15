@@ -46,6 +46,15 @@ export default function Home() {
     }
   };
 
+  const handleClearAllAlerts = async () => {
+    try {
+      await api.clearAllAlerts();
+      setAlerts([]);
+    } catch (err) {
+      console.error('Failed to clear alerts:', err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[var(--carbon-base)] text-[var(--porcelain)] flex flex-col justify-between">
       <div>
@@ -78,12 +87,13 @@ export default function Home() {
         onClose={() => setIsAlertsOpen(false)}
         alerts={alerts}
         onAcknowledge={handleAcknowledgeAlert}
+        onClearAll={handleClearAllAlerts}
       />
 
       {/* Global Clinical & Occupational Disclaimer Footer */}
       <footer className="border-t border-[var(--carbon-border)] bg-[var(--carbon-surface)] px-4 lg:px-8 py-4 mt-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs font-mono text-neutral-400 gap-2">
-          <span>ThermoSense AI • Occupational Heat-Health Early Warning Prototype</span>
+          <span>THERMOSENSE • Occupational Heat-Health Early Warning Prototype</span>
           <span>Not a diagnostic medical device • Strictly for workplace heat-stress surveillance</span>
         </div>
       </footer>

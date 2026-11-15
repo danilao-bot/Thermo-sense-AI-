@@ -16,6 +16,13 @@ def get_active_alerts(db: Session = Depends(get_db)):
         SafetyAlertModel.timestamp.desc()
     ).limit(50).all()
 
+@router.post("/clear-all")
+def clear_all_alerts(db: Session = Depends(get_db)):
+    """Marks all unacknowledged alerts as acknowledged or cleared."""
+    db.query(SafetyAlertModel).filter(SafetyAlertModel.acknowledged == False).update({"acknowledged": True})
+    db.commit()
+    return {"message": "All alerts cleared successfully", "status": "ok"}
+
 @router.post("/{alert_id}/acknowledge", response_model=SafetyAlertResponse)
 def acknowledge_alert(alert_id: str, payload: AlertAcknowledgeRequest, db: Session = Depends(get_db)):
     """Marks a safety alert as seen/acknowledged by a supervisor."""

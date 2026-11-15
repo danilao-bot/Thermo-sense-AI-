@@ -15,8 +15,14 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'ThermoSense AI — Occupational Heat-Health Telemetry',
-  description: 'Precision physiological strain and heat-health monitoring console.',
+  title: 'THERMOSENSE',
+  description: 'Occupational Heat-Health & Physiological Strain Monitoring',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico' },
+    ],
+  },
 };
 
 export default function RootLayout({
