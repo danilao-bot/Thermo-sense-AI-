@@ -40,10 +40,10 @@ class SafetyAlertEngine:
 
         t_point = core_temp_estimate.get("point_estimate_C", 37.0)
         t_high = core_temp_estimate.get("upper_bound_C", t_point)
-        hr = telemetry.get("heart_rate_bpm", np.nan)
-        hr_drop = telemetry.get("heart_rate_bpm_rate_of_change", 0.0)
-        duration_min = telemetry.get("work_duration_min", 30.0)
-        air_temp = telemetry.get("air_temp_C", 25.0)
+        hr = telemetry.get("heart_rate_bpm")
+        hr_drop = telemetry.get("heart_rate_bpm_rate_of_change") or 0.0
+        duration_min = telemetry.get("work_duration_min") or 30.0
+        air_temp = telemetry.get("air_temp_C") or 25.0
 
         # 1. Heat Strain Zone Evaluation
         strain_result = self._evaluate_heat_strain(t_point, t_high, hr)

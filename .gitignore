@@ -43,6 +43,11 @@ env/
 .env.*
 !.env.example
 
+# Local SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
 # Frontend artifacts & dependencies
 frontend/node_modules/
 frontend/.next/
