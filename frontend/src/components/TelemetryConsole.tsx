@@ -41,6 +41,17 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
   // Sync ambient weather via GPS
   const syncAmbientWeather = useCallback(async () => {
     setAmbientLoading(true);
+    const fetchSafeFallback = async () => {
+      try {
+        const fallback = await api.getWeather(40.7128, -74.006);
+        setAmbientWeather(fallback);
+      } catch (err) {
+        console.warn('Weather fallback failed, using offline default:', err);
+      } finally {
+        setAmbientLoading(false);
+      }
+    };
+
     try {
       if (typeof window !== 'undefined' && navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -48,25 +59,19 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
             try {
               const w = await api.getWeather(pos.coords.latitude, pos.coords.longitude);
               setAmbientWeather(w);
+              setAmbientLoading(false);
             } catch (err) {
               console.warn('Weather fetch failed, falling back to default site:', err);
-              const fallback = await api.getWeather(40.7128, -74.006);
-              setAmbientWeather(fallback);
-            } finally {
-              setAmbientLoading(false);
+              await fetchSafeFallback();
             }
           },
           async () => {
-            const fallback = await api.getWeather(40.7128, -74.006);
-            setAmbientWeather(fallback);
-            setAmbientLoading(false);
+            await fetchSafeFallback();
           },
           { timeout: 8000 }
         );
       } else {
-        const fallback = await api.getWeather(40.7128, -74.006);
-        setAmbientWeather(fallback);
-        setAmbientLoading(false);
+        await fetchSafeFallback();
       }
     } catch {
       setAmbientLoading(false);
