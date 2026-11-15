@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { CloudSun, Wind, Sun, Compass, ShieldAlert, Cpu } from 'lucide-react';
 import { api } from '@/lib/api';
 import { EnvironmentalRiskResponse } from '@/types/api';
 
@@ -29,7 +28,7 @@ export const EnvironmentalView: React.FC = () => {
       });
       setEnvData(res);
     } catch (err) {
-      console.error('Mode B calculation error:', err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -44,46 +43,45 @@ export const EnvironmentalView: React.FC = () => {
   const pwcUpper = envData?.pwc_loss.upper_bound_pct ?? 37.0;
 
   return (
-    <div className="space-y-6">
-      <div className="bg-[var(--carbon-surface)] p-6 rounded-2xl border border-[var(--carbon-border)] flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-8">
+      {/* Editorial Header */}
+      <div className="border-b border-white/10 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <span className="text-xs font-mono uppercase text-neutral-400">
-            Mode B Fallback Engine (HEATSHIELD Model B)
+          <span className="text-xs font-mono uppercase tracking-widest text-[#244CFF]">
+            Sensor-Free Fallback Mode
           </span>
-          <h2 className="text-xl font-bold text-[var(--porcelain)]">
-            Environmental Thermal Stress & Work Capacity Loss
-          </h2>
-          <p className="text-xs text-neutral-400 mt-1">
-            Predicts Physical Work Capacity loss (PWC%) and ISO work/rest ratios when wearable
-            sensors are unavailable.
+          <h1 className="text-4xl lg:text-5xl font-black text-white uppercase tracking-tight font-display mt-2">
+            Environmental Heat Risk & Labor Capacity.
+          </h1>
+          <p className="text-sm font-mono text-white/50 max-w-2xl mt-2">
+            Predicts Physical Work Capacity loss percentage (PWC%) and ISO 7243 work-rest cycles
+            based on dry-bulb temperature, vapor pressure, and solar radiation.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              setAirTemp(41.0);
-              setHumidity(70);
-            }}
-            className="px-3 py-1.5 rounded-lg border border-[var(--carbon-border)] bg-[var(--carbon-elevated)] hover:bg-[var(--carbon-border)] text-xs font-mono text-[var(--vanilla-cream)]"
-          >
-            Load Heatwave Preset
-          </button>
-        </div>
+
+        <button
+          onClick={() => {
+            setAirTemp(41.0);
+            setHumidity(70);
+          }}
+          className="bg-white/5 border border-white/10 hover:border-white/30 text-xs font-mono uppercase px-4 py-3 text-white tracking-wider self-start md:self-auto"
+        >
+          Preset: Extreme Heatwave
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left: Weather Input Sliders (6 cols) */}
-        <div className="lg:col-span-6 bg-[var(--carbon-surface)] p-6 rounded-2xl border border-[var(--carbon-border)] space-y-4">
-          <h3 className="text-sm font-semibold text-[var(--porcelain)] border-b border-[var(--carbon-border)] pb-2 flex items-center gap-2">
-            <CloudSun className="h-4 w-4 text-[var(--ultramarine)]" />
-            <span>Atmospheric & Microclimate Parameters</span>
-          </h3>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left: Atmospheric Sliders (6 cols) */}
+        <div className="lg:col-span-6 bg-[#14171C] border border-white/10 p-8 space-y-6">
+          <span className="text-xs font-mono uppercase tracking-widest text-white/40 block">
+            Environmental Parameters
+          </span>
 
-          <div className="space-y-4 text-xs font-mono">
+          <div className="space-y-6 text-xs font-mono">
             <div>
-              <div className="flex justify-between mb-1">
+              <div className="flex justify-between mb-2 text-white/80">
                 <span>Air Dry-Bulb Temperature: {airTemp.toFixed(1)}°C</span>
-                <span className="text-neutral-500">Range: -10 to 60°C</span>
+                <span className="text-white/30">-10 to 60°C</span>
               </div>
               <input
                 type="range"
@@ -92,14 +90,14 @@ export const EnvironmentalView: React.FC = () => {
                 step="0.5"
                 value={airTemp}
                 onChange={(e) => setAirTemp(Number(e.target.value))}
-                className="w-full accent-[var(--ultramarine)]"
+                className="w-full accent-[#244CFF] bg-white/10 h-1 cursor-pointer"
               />
             </div>
 
             <div>
-              <div className="flex justify-between mb-1">
+              <div className="flex justify-between mb-2 text-white/80">
                 <span>Relative Humidity: {humidity}%</span>
-                <span className="text-neutral-500">Range: 0 to 100%</span>
+                <span className="text-white/30">10 to 100%</span>
               </div>
               <input
                 type="range"
@@ -107,14 +105,14 @@ export const EnvironmentalView: React.FC = () => {
                 max="100"
                 value={humidity}
                 onChange={(e) => setHumidity(Number(e.target.value))}
-                className="w-full accent-[var(--ultramarine)]"
+                className="w-full accent-[#244CFF] bg-white/10 h-1 cursor-pointer"
               />
             </div>
 
             <div>
-              <div className="flex justify-between mb-1">
-                <span>Solar Irradiance: {solar} W/m²</span>
-                <span className="text-neutral-500">Clear noon ~800 W/m²</span>
+              <div className="flex justify-between mb-2 text-white/80">
+                <span>Solar Radiation: {solar} W/m²</span>
+                <span className="text-white/30">0 to 1000</span>
               </div>
               <input
                 type="range"
@@ -123,14 +121,14 @@ export const EnvironmentalView: React.FC = () => {
                 step="50"
                 value={solar}
                 onChange={(e) => setSolar(Number(e.target.value))}
-                className="w-full accent-[var(--ultramarine)]"
+                className="w-full accent-[#244CFF] bg-white/10 h-1 cursor-pointer"
               />
             </div>
 
             <div>
-              <div className="flex justify-between mb-1">
+              <div className="flex justify-between mb-2 text-white/80">
                 <span>Clothing Insulation (clo): {clo}</span>
-                <span className="text-neutral-500">Heavy PPE: 1.2 - 1.6</span>
+                <span className="text-white/30">Heavy PPE 1.2+</span>
               </div>
               <input
                 type="range"
@@ -139,57 +137,53 @@ export const EnvironmentalView: React.FC = () => {
                 step="0.1"
                 value={clo}
                 onChange={(e) => setClo(Number(e.target.value))}
-                className="w-full accent-[var(--ultramarine)]"
+                className="w-full accent-[#244CFF] bg-white/10 h-1 cursor-pointer"
               />
             </div>
           </div>
         </div>
 
-        {/* Right: Model B PWC Loss Output & Work/Rest Ratio (6 cols) */}
-        <div className="lg:col-span-6 bg-[var(--carbon-surface)] p-6 rounded-2xl border border-[var(--carbon-border)] flex flex-col justify-between">
+        {/* Right: Big Impact Readout (6 cols) */}
+        <div className="lg:col-span-6 bg-[#14171C] border border-white/10 p-8 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between border-b border-[var(--carbon-border)] pb-2 mb-4">
-              <h3 className="text-sm font-semibold text-[var(--porcelain)] flex items-center gap-2">
-                <Cpu className="h-4 w-4 text-[var(--neon-jade)]" />
-                <span>Physical Work Capacity (PWC) Projection</span>
-              </h3>
-              <span className="text-xs font-mono px-2 py-0.5 rounded bg-[var(--carbon-elevated)] text-[var(--vanilla-cream)]">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-8">
+              <span className="text-xs font-mono uppercase tracking-widest text-white/40">
+                PWC REDUCTION ESTIMATE
+              </span>
+              <span className="text-xs font-mono text-[#FFF5D9] border border-white/10 px-2 py-0.5">
                 {envData?.environmental_risk_level || 'Moderate Risk'}
               </span>
             </div>
 
-            {/* PWC Capacity Loss Main Readout */}
-            <div className="p-6 bg-[var(--carbon-elevated)] rounded-xl border border-[var(--carbon-border)] text-center my-4">
-              <span className="text-xs font-mono text-neutral-400 block uppercase">
-                Productivity / Labor Capacity Reduction
-              </span>
-              <div className="text-5xl font-black text-[var(--porcelain)] tabular-nums mt-2">
+            {/* Huge Number */}
+            <div className="text-center py-6">
+              <div className="text-7xl lg:text-8xl font-black text-white tabular-nums font-display">
                 {pwcLoss.toFixed(1)}
-                <span className="text-2xl font-light text-neutral-400">% Loss</span>
+                <span className="text-3xl font-light text-white/40 ml-2">%</span>
               </div>
-              <div className="text-xs font-mono text-[var(--sugar-violet)] mt-2">
-                90% Conformal Range: [{pwcLower.toFixed(1)}% – {pwcUpper.toFixed(1)}%]
-              </div>
+              <span className="text-xs font-mono text-[#9470DB] block mt-3">
+                90% Conformal Range: [{pwcLower.toFixed(1)}% — {pwcUpper.toFixed(1)}%]
+              </span>
             </div>
 
-            {/* OSHA Work/Rest Protocol Card */}
-            <div className="p-4 bg-[var(--carbon-base)] rounded-xl border border-[var(--carbon-border)] space-y-2">
-              <span className="text-xs font-mono uppercase text-neutral-400 block">
-                Prescribed Work/Rest Schedule
+            {/* Prescribed Rest Ratio */}
+            <div className="bg-[#0D0F12] border border-white/10 p-6 mt-6">
+              <span className="text-[10px] font-mono tracking-widest uppercase text-white/40 block mb-1">
+                PRESCRIBED OCCUPATIONAL SCHEDULE
               </span>
-              <div className="text-lg font-bold text-[var(--vanilla-cream)]">
+              <div className="text-xl font-bold text-white font-display">
                 {envData?.recommended_work_rest_ratio || '45m Work / 15m Shaded Rest'}
               </div>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs font-mono text-white/50 mt-2">
                 Heat Index: {envData?.heat_index_C ? `${envData.heat_index_C}°C` : '38.5°C'}.
-                Mandatory shaded recovery required to prevent cumulative heat storage.
+                Mandatory cooling break intervals required to prevent cumulative heat storage.
               </p>
             </div>
           </div>
 
-          <div className="text-[11px] font-mono text-neutral-400 pt-3 border-t border-[var(--carbon-border)]">
-            Trained on HEATSHIELD D1/D2 clinical climatic data (975 occupational sessions, R²=0.987).
-          </div>
+          <span className="text-[11px] font-mono text-white/30 pt-6 border-t border-white/10 block mt-6">
+            Trained on HEATSHIELD D1/D2 clinical trials (975 occupational sessions, R²=0.987).
+          </span>
         </div>
       </div>
     </div>

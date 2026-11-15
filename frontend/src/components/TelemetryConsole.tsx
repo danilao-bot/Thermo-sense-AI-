@@ -1,18 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  Thermometer,
-  Heart,
-  Wind,
-  Shield,
-  AlertTriangle,
-  Flame,
-  CheckCircle2,
-  Clock,
-  RefreshCw,
-  Activity,
-} from 'lucide-react';
 import { api } from '@/lib/api';
 import { TelemetryEvaluationResponse } from '@/types/api';
 
@@ -25,7 +13,6 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
   privacyMode,
   onAlertTriggered,
 }) => {
-  // Real-time sensor state controls
   const [heartRate, setHeartRate] = useState<number>(142);
   const [skinTemp, setSkinTemp] = useState<number>(36.2);
   const [airTemp, setAirTemp] = useState<number>(34.0);
@@ -33,13 +20,10 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
   const [durationMin, setDurationMin] = useState<number>(35);
   const [clo, setClo] = useState<number>(1.2);
 
-  // Model Inference State
   const [telemetryData, setTelemetryData] = useState<TelemetryEvaluationResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [autoSimulate, setAutoSimulate] = useState<boolean>(false);
 
-  // Fetch prediction from backend
-  const evaluateCurrentTelemetry = async () => {
+  const evaluate = async () => {
     setLoading(true);
     try {
       const res = await api.evaluateTelemetry({
@@ -55,279 +39,228 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
         onAlertTriggered?.();
       }
     } catch (err) {
-      console.error('Inference error:', err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Initial fetch on mount
   useEffect(() => {
-    evaluateCurrentTelemetry();
+    evaluate();
   }, []);
 
-  // Heartbeat simulation ticker
   useEffect(() => {
-    if (!autoSimulate) return;
-    const interval = setInterval(() => {
-      setHeartRate((prev) => Math.min(195, Math.max(70, prev + (Math.random() * 6 - 3))));
-      setSkinTemp((prev) => Math.min(39.5, Math.max(32.0, prev + (Math.random() * 0.2 - 0.1))));
-      setDurationMin((prev) => prev + 1);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [autoSimulate]);
-
-  // Re-evaluate whenever telemetry sliders change
-  useEffect(() => {
-    const debounce = setTimeout(() => {
-      evaluateCurrentTelemetry();
-    }, 400);
-    return () => clearTimeout(debounce);
+    const timer = setTimeout(evaluate, 300);
+    return () => clearTimeout(timer);
   }, [heartRate, skinTemp, airTemp, humidity, durationMin, clo]);
 
   const coreTemp = telemetryData?.core_temp.point_estimate_C || 37.8;
   const lowerBound = telemetryData?.core_temp.lower_bound_C || 37.4;
   const upperBound = telemetryData?.core_temp.upper_bound_C || 38.2;
-  const quality = telemetryData?.core_temp.sensor_quality_score || 0.95;
   const status = telemetryData?.safety_status || 'GREEN';
   const isEmergency = telemetryData?.emergency_escalation || false;
 
   const getStatusColor = () => {
     switch (status) {
       case 'GREEN':
-        return 'var(--neon-jade)';
+        return '#10B981';
       case 'AMBER':
-        return 'var(--acid-amber)';
+        return '#F59E0B';
       case 'ORANGE':
-        return '#f97316';
+        return '#F97316';
       case 'RED':
       case 'EMERGENCY_PURPLE':
-        return 'var(--cherry-red)';
+        return '#E72D49';
       default:
-        return 'var(--ultramarine)';
+        return '#244CFF';
     }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Emergency Alert Banner (Renders only during thermal escalation) */}
+    <div className="space-y-8">
+      {/* Hero Headline Section - Bold & Punchy */}
+      <div className="border-b border-white/10 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <span className="text-xs font-mono uppercase tracking-widest text-[#244CFF]">
+            Live Thermal Surveillance
+          </span>
+          <h1 className="text-4xl lg:text-5xl font-black text-white uppercase tracking-tight font-display mt-2">
+            Physiological Heat Strain Monitor.
+          </h1>
+          <p className="text-sm font-mono text-white/50 max-w-2xl mt-2">
+            Non-invasive core temperature estimation ($T_{'\\text{core}'}$) with conformal 90%
+            uncertainty bounds and active cardiovascular reserve indexing.
+          </p>
+        </div>
+
+        {/* Global Strain Indicator */}
+        <div
+          className="border px-6 py-4 flex flex-col justify-center min-w-[240px]"
+          style={{ borderColor: getStatusColor(), backgroundColor: `${getStatusColor()}15` }}
+        >
+          <span className="text-[10px] font-mono tracking-widest uppercase text-white/60">
+            CURRENT ZONE STATUS
+          </span>
+          <span
+            className="text-2xl font-black font-display tracking-tight uppercase mt-0.5"
+            style={{ color: getStatusColor() }}
+          >
+            {status}
+          </span>
+          <span className="text-[11px] font-mono text-white/70 mt-1">
+            {telemetryData?.heat_strain_details.strain_label || 'Safe Baseline'}
+          </span>
+        </div>
+      </div>
+
+      {/* Emergency Escalate Bar */}
       {isEmergency && (
-        <div className="bg-[var(--cherry-red)] text-white p-4 rounded-xl border border-red-500 shadow-[0_0_20px_var(--cherry-red-glow)] animate-pulse flex items-start justify-between">
-          <div className="flex items-start gap-3">
-            <Flame className="h-6 w-6 shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-bold text-sm tracking-wide uppercase">
-                CRITICAL OCCUPATIONAL EMERGENCY — HEAT STROKE ESCALATION DETECTED
-              </h3>
-              <p className="text-xs text-red-100 mt-1">
-                Estimated core temperature exceeding critical safe limits ({coreTemp.toFixed(1)}°C)
-                or dangerous rate of rise. Cease work immediately.
-              </p>
-              <div className="mt-2 text-xs font-mono bg-black/30 px-2 py-1 rounded inline-block">
-                PROTOCOL: Remove PPE, transition to shaded air-conditioned shelter, initiate active
-                cooling.
-              </div>
-            </div>
+        <div className="bg-[#E72D49] text-white p-6 border-l-4 border-white flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <span className="text-xs font-mono uppercase tracking-widest bg-black px-2 py-0.5">
+              EMERGENCY PROTOCOL ACTIVE
+            </span>
+            <h3 className="text-xl font-bold uppercase mt-2">
+              Critical Core Hyperthermia Detected ({coreTemp.toFixed(1)}°C)
+            </h3>
+            <p className="text-xs text-white/90 mt-1 font-mono">
+              Cease physical labor immediately. Transition to rehabilitation station. Initiate active external cooling.
+            </p>
           </div>
+          <button
+            onClick={() => alert('Emergency alert broadcast sent to shift safety supervisors.')}
+            className="bg-white text-[#E72D49] font-black font-mono text-xs uppercase px-6 py-3 tracking-wider hover:bg-neutral-100 shrink-0"
+          >
+            Dispatch Medical Team
+          </button>
         </div>
       )}
 
-      {/* Main Grid: Dual Ring Focal Gauge + Physiological Metrics */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: Hero Core Temp Gauge (6 cols) */}
-        <div className="lg:col-span-6 bg-[var(--carbon-surface)] rounded-2xl border border-[var(--carbon-border)] p-6 flex flex-col justify-between">
-          <div className="flex items-center justify-between border-b border-[var(--carbon-border)] pb-3">
-            <div>
-              <span className="text-xs font-mono uppercase text-neutral-400">
-                Model A & D Inference Engine
-              </span>
-              <h2 className="text-base font-semibold text-[var(--porcelain)]">
-                Estimated Core Body Temperature ($T_{'\\text{core}'}$)
-              </h2>
-            </div>
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--carbon-elevated)] border border-[var(--carbon-border)] text-xs font-mono">
-              <span
-                className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: getStatusColor() }}
-              />
-              <span className="text-[var(--vanilla-cream)] font-bold">{status} ZONE</span>
-            </div>
+      {/* Main Split Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left Column: Huge Tactical Core Temperature Readout (7 cols) */}
+        <div className="lg:col-span-7 bg-[#14171C] border border-white/10 p-8 flex flex-col justify-between">
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <span className="text-xs font-mono tracking-widest uppercase text-white/40">
+              CORE TEMPERATURE ESTIMATION
+            </span>
+            <span className="text-xs font-mono text-[#9470DB]">
+              90% CONFIDENCE INTERVAL [{lowerBound.toFixed(2)}°C — {upperBound.toFixed(2)}°C]
+            </span>
           </div>
 
-          {/* Focal Gauge Display */}
-          <div className="py-8 flex flex-col items-center justify-center relative">
-            {/* Circular Gauge Visualization */}
-            <div className="relative w-64 h-64 flex items-center justify-center">
-              <svg className="w-full h-full transform -rotate-90">
-                {/* Background Ring */}
-                <circle
-                  cx="128"
-                  cy="128"
-                  r="108"
-                  stroke="var(--carbon-border)"
-                  strokeWidth="14"
-                  fill="transparent"
-                />
-                {/* Conformal Uncertainty Arc (Sugar Violet) */}
-                <circle
-                  cx="128"
-                  cy="128"
-                  r="108"
-                  stroke="var(--sugar-violet)"
-                  strokeWidth="14"
-                  strokeDasharray="678"
-                  strokeDashoffset={678 - (678 * (upperBound - 35)) / 6.5}
-                  strokeLinecap="round"
-                  fill="transparent"
-                  opacity="0.35"
-                />
-                {/* Point Estimate Arc */}
-                <circle
-                  cx="128"
-                  cy="128"
-                  r="108"
-                  stroke={getStatusColor()}
-                  strokeWidth="14"
-                  strokeDasharray="678"
-                  strokeDashoffset={678 - (678 * (coreTemp - 35)) / 6.5}
-                  strokeLinecap="round"
-                  fill="transparent"
-                  className="transition-all duration-500 ease-out"
-                />
-              </svg>
+          {/* Central Massive Core Temp Number */}
+          <div className="py-12 flex flex-col items-center justify-center text-center">
+            <div className="text-7xl lg:text-9xl font-black tracking-tighter tabular-nums text-white font-display">
+              {coreTemp.toFixed(2)}
+              <span className="text-3xl lg:text-5xl font-light text-white/30 ml-2">°C</span>
+            </div>
 
-              {/* Central Value Readout */}
-              <div className="absolute flex flex-col items-center">
-                <span className="text-5xl font-extrabold tracking-tight tabular-nums text-[var(--porcelain)]">
-                  {coreTemp.toFixed(2)}
-                  <span className="text-2xl font-normal text-neutral-400">°C</span>
-                </span>
-                <span className="text-xs font-mono text-[var(--vanilla-cream)] mt-1">
-                  Baseline: 37.00°C
-                </span>
+            {/* Visual Uncertainty Range Bar */}
+            <div className="w-full max-w-md mt-6 space-y-2">
+              <div className="flex justify-between text-xs font-mono text-white/40">
+                <span>Safe 36.5°C</span>
+                <span>Warning 38.5°C</span>
+                <span className="text-[#E72D49]">Stroke 40.0°C</span>
+              </div>
+              <div className="w-full h-3 bg-white/5 relative overflow-hidden">
+                {/* Conformal Band */}
+                <div
+                  className="absolute top-0 bottom-0 bg-[#9470DB]/30"
+                  style={{
+                    left: `${Math.max(0, ((lowerBound - 36) / 4.5) * 100)}%`,
+                    width: `${Math.max(5, ((upperBound - lowerBound) / 4.5) * 100)}%`,
+                  }}
+                />
+                {/* Point Marker */}
+                <div
+                  className="absolute top-0 bottom-0 w-2 shadow-[0_0_10px_white]"
+                  style={{
+                    left: `${Math.max(0, Math.min(98, ((coreTemp - 36) / 4.5) * 100))}%`,
+                    backgroundColor: getStatusColor(),
+                  }}
+                />
               </div>
             </div>
-
-            {/* Model D Conformal 90% Bound Pill */}
-            <div className="mt-4 flex items-center gap-2 bg-[var(--carbon-elevated)] border border-[var(--sugar-violet)]/40 px-3.5 py-1.5 rounded-xl">
-              <Shield className="h-4 w-4 text-[var(--sugar-violet)]" />
-              <span className="text-xs font-mono text-[var(--sugar-violet)]">
-                90% Conformal Interval: [{lowerBound.toFixed(2)}°C – {upperBound.toFixed(2)}°C]
-              </span>
-            </div>
           </div>
 
-          {/* Sensor Reliability & Diagnostics Footer */}
-          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-[var(--carbon-border)] text-xs font-mono">
-            <div className="bg-[var(--carbon-elevated)] p-2.5 rounded-xl border border-[var(--carbon-border)]">
-              <span className="text-neutral-400 block text-[10px]">SENSOR QUALITY SCORE</span>
-              <span className="text-sm font-bold text-[var(--porcelain)]">
-                {(quality * 100).toFixed(0)}% Reliable
-              </span>
-            </div>
-            <div className="bg-[var(--carbon-elevated)] p-2.5 rounded-xl border border-[var(--carbon-border)]">
-              <span className="text-neutral-400 block text-[10px]">DATA PROVENANCE</span>
-              <span className="text-sm font-bold text-[var(--ultramarine)]">
-                ML Hybrid (Model A)
-              </span>
-            </div>
+          {/* Protocol Guideline Footer */}
+          <div className="bg-[#0D0F12] border border-white/10 p-5 mt-4">
+            <span className="text-[10px] font-mono tracking-widest uppercase text-white/40 block mb-1">
+              OCCUPATIONAL ACTION REQUIRED
+            </span>
+            <p className="text-sm font-bold text-[#FFF5D9]">
+              {telemetryData?.heat_strain_details.recommended_action ||
+                'Continue regular monitoring. Maintain baseline hydration.'}
+            </p>
           </div>
         </div>
 
-        {/* Right Column: Physiological Quad-Grid & Telemetry Sliders (6 cols) */}
-        <div className="lg:col-span-6 space-y-4 flex flex-col justify-between">
-          {/* Quad Grid */}
+        {/* Right Column: Key Physiological Metrics (5 cols) */}
+        <div className="lg:col-span-5 space-y-4 flex flex-col justify-between">
           <div className="grid grid-cols-2 gap-4">
-            {/* Heart Rate Card */}
-            <div className="bg-[var(--carbon-surface)] p-4 rounded-xl border border-[var(--carbon-border)]">
-              <div className="flex items-center justify-between text-neutral-400 text-xs mb-1">
-                <span className="font-mono">HEART RATE</span>
-                <Heart className="h-4 w-4 text-[var(--cherry-red)]" />
+            {/* Heart Rate */}
+            <div className="bg-[#14171C] border border-white/10 p-6">
+              <span className="text-[11px] font-mono tracking-widest uppercase text-white/40 block">
+                HEART RATE
+              </span>
+              <div className="text-4xl font-black tabular-nums text-white mt-2 font-display">
+                {heartRate} <span className="text-sm font-normal text-white/40">BPM</span>
               </div>
-              <div className="text-3xl font-extrabold tabular-nums text-[var(--porcelain)]">
-                {heartRate}{' '}
-                <span className="text-xs font-normal text-neutral-400">bpm</span>
-              </div>
-              <div className="text-[11px] font-mono text-neutral-400 mt-2">
-                Cardiovascular strain: {Math.round((heartRate / 190) * 100)}% Max
-              </div>
+              <span className="text-xs font-mono text-white/40 mt-2 block">
+                {Math.round((heartRate / 190) * 100)}% HR Reserve Max
+              </span>
             </div>
 
-            {/* Mean Skin Temp Card */}
-            <div className="bg-[var(--carbon-surface)] p-4 rounded-xl border border-[var(--carbon-border)]">
-              <div className="flex items-center justify-between text-neutral-400 text-xs mb-1">
-                <span className="font-mono">MEAN SKIN TEMP</span>
-                <Thermometer className="h-4 w-4 text-[var(--ultramarine)]" />
+            {/* Mean Skin Temp */}
+            <div className="bg-[#14171C] border border-white/10 p-6">
+              <span className="text-[11px] font-mono tracking-widest uppercase text-white/40 block">
+                SKIN TEMP
+              </span>
+              <div className="text-4xl font-black tabular-nums text-white mt-2 font-display">
+                {skinTemp.toFixed(1)} <span className="text-sm font-normal text-white/40">°C</span>
               </div>
-              <div className="text-3xl font-extrabold tabular-nums text-[var(--porcelain)]">
-                {skinTemp.toFixed(1)}{' '}
-                <span className="text-xs font-normal text-neutral-400">°C</span>
-              </div>
-              <div className="text-[11px] font-mono text-neutral-400 mt-2">
-                Core-Skin Gradient: {(coreTemp - skinTemp).toFixed(1)}°C
-              </div>
+              <span className="text-xs font-mono text-white/40 mt-2 block">
+                Gradient: {(coreTemp - skinTemp).toFixed(1)}°C
+              </span>
             </div>
 
-            {/* Moran PSI Index */}
-            <div className="bg-[var(--carbon-surface)] p-4 rounded-xl border border-[var(--carbon-border)]">
-              <div className="flex items-center justify-between text-neutral-400 text-xs mb-1">
-                <span className="font-mono">MORAN PSI (0–10)</span>
-                <Activity className="h-4 w-4 text-[var(--neon-jade)]" />
+            {/* Moran PSI */}
+            <div className="bg-[#14171C] border border-white/10 p-6">
+              <span className="text-[11px] font-mono tracking-widest uppercase text-white/40 block">
+                MORAN PSI INDEX
+              </span>
+              <div className="text-4xl font-black tabular-nums text-white mt-2 font-display">
+                {((coreTemp - 37.0) * 5.0 + ((heartRate - 70) / 110) * 5.0).toFixed(1)}
               </div>
-              <div className="text-3xl font-extrabold tabular-nums text-[var(--porcelain)]">
-                {telemetryData ? (
-                  ((coreTemp - 37.0) * 5.0 + ((heartRate - 70) / 110) * 5.0).toFixed(1)
-                ) : (
-                  '4.8'
-                )}
-              </div>
-              <div className="text-[11px] font-mono text-neutral-400 mt-2">
-                Status: {status === 'GREEN' ? 'Physiologically Safe' : 'Elevated Strain'}
-              </div>
+              <span className="text-xs font-mono text-white/40 mt-2 block">Scale 0 - 10</span>
             </div>
 
-            {/* Work/Rest Recommendation */}
-            <div className="bg-[var(--carbon-surface)] p-4 rounded-xl border border-[var(--carbon-border)]">
-              <div className="flex items-center justify-between text-neutral-400 text-xs mb-1">
-                <span className="font-mono">WORK/REST CYCLE</span>
-                <Clock className="h-4 w-4 text-[var(--vanilla-cream)]" />
+            {/* Work / Rest Cycle */}
+            <div className="bg-[#14171C] border border-white/10 p-6">
+              <span className="text-[11px] font-mono tracking-widest uppercase text-white/40 block">
+                WORK / REST
+              </span>
+              <div className="text-lg font-bold text-[#FFF5D9] mt-3 font-mono">
+                {telemetryData?.heat_strain_details.work_rest_recommendation || '45m / 15m'}
               </div>
-              <div className="text-lg font-bold text-[var(--vanilla-cream)] mt-1">
-                {telemetryData?.heat_strain_details.work_rest_recommendation ||
-                  '45m Work / 15m Rest'}
-              </div>
-              <div className="text-[11px] font-mono text-neutral-400 mt-2">
-                Shift Elapsed: {durationMin} min
-              </div>
+              <span className="text-xs font-mono text-white/40 mt-2 block">
+                Shift: {durationMin} min
+              </span>
             </div>
           </div>
 
-          {/* Interactive Simulation Sliders (Allows supervisor to test wearable readings) */}
-          <div className="bg-[var(--carbon-surface)] p-5 rounded-2xl border border-[var(--carbon-border)] space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono uppercase text-[var(--vanilla-cream)]">
-                Wearable Telemetry Controls (Live Sliders)
-              </span>
-              <button
-                onClick={() => setAutoSimulate(!autoSimulate)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono transition-colors ${
-                  autoSimulate
-                    ? 'bg-[var(--neon-jade)]/20 text-[var(--neon-jade)] border border-[var(--neon-jade)]'
-                    : 'bg-[var(--carbon-elevated)] text-neutral-300 hover:text-white'
-                }`}
-              >
-                <RefreshCw
-                  className={`h-3 w-3 ${autoSimulate ? 'animate-spin' : ''}`}
-                />
-                <span>{autoSimulate ? 'Simulating Live Stream' : 'Live Stream Inactive'}</span>
-              </button>
-            </div>
+          {/* Interactive Tactical Sliders */}
+          <div className="bg-[#14171C] border border-white/10 p-6 space-y-4">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#244CFF] block">
+              Sensor Emulation Sliders
+            </span>
 
-            <div className="space-y-3 text-xs font-mono">
+            <div className="space-y-4 text-xs font-mono">
               <div>
-                <div className="flex justify-between mb-1">
+                <div className="flex justify-between mb-1.5 text-white/70">
                   <span>Heart Rate: {heartRate} bpm</span>
-                  <span className="text-neutral-500">Range: 40 - 200</span>
+                  <span className="text-white/30">40 - 200</span>
                 </div>
                 <input
                   type="range"
@@ -335,14 +268,14 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
                   max="200"
                   value={heartRate}
                   onChange={(e) => setHeartRate(Number(e.target.value))}
-                  className="w-full accent-[var(--ultramarine)]"
+                  className="w-full accent-[#244CFF] bg-white/10 h-1 rounded-none cursor-pointer"
                 />
               </div>
 
               <div>
-                <div className="flex justify-between mb-1">
-                  <span>Skin Temp: {skinTemp.toFixed(1)}°C</span>
-                  <span className="text-neutral-500">Range: 28.0 - 40.0</span>
+                <div className="flex justify-between mb-1.5 text-white/70">
+                  <span>Skin Temperature: {skinTemp.toFixed(1)}°C</span>
+                  <span className="text-white/30">28.0 - 40.0</span>
                 </div>
                 <input
                   type="range"
@@ -351,14 +284,14 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
                   step="0.1"
                   value={skinTemp}
                   onChange={(e) => setSkinTemp(Number(e.target.value))}
-                  className="w-full accent-[var(--ultramarine)]"
+                  className="w-full accent-[#244CFF] bg-white/10 h-1 rounded-none cursor-pointer"
                 />
               </div>
 
               <div>
-                <div className="flex justify-between mb-1">
-                  <span>Shift Duration: {durationMin} min</span>
-                  <span className="text-neutral-500">Range: 5 - 240</span>
+                <div className="flex justify-between mb-1.5 text-white/70">
+                  <span>Shift Duration: {durationMin} minutes</span>
+                  <span className="text-white/30">5 - 240</span>
                 </div>
                 <input
                   type="range"
@@ -366,7 +299,7 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
                   max="240"
                   value={durationMin}
                   onChange={(e) => setDurationMin(Number(e.target.value))}
-                  className="w-full accent-[var(--ultramarine)]"
+                  className="w-full accent-[#244CFF] bg-white/10 h-1 rounded-none cursor-pointer"
                 />
               </div>
             </div>

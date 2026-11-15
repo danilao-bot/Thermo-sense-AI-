@@ -1,17 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Activity,
-  CloudSun,
-  Droplets,
-  Users,
-  ShieldAlert,
-  Eye,
-  EyeOff,
-  Server,
-  Zap,
-} from 'lucide-react';
+import { ShieldAlert, Eye, EyeOff } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: 'telemetry' | 'environmental' | 'hydration' | 'workers';
@@ -33,118 +23,101 @@ export const Header: React.FC<HeaderProps> = ({
   backendOnline,
 }) => {
   return (
-    <header className="sticky top-0 z-40 bg-[var(--carbon-surface)] border-b border-[var(--carbon-border)] px-4 lg:px-8 py-3">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        {/* Brand & System Status */}
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-lg bg-[var(--ultramarine)] flex items-center justify-center shadow-inner">
-            <Zap className="h-5 w-5 text-white" />
+    <header className="border-b border-white/10 bg-[#0D0F12]/80 backdrop-blur-md sticky top-0 z-50 px-6 lg:px-12 py-4">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+        {/* Brand Lockup */}
+        <div className="flex items-center gap-4">
+          <div className="h-10 w-10 bg-[#244CFF] text-white flex items-center justify-center font-black tracking-tighter text-lg rounded-none shadow-[0_0_24px_rgba(36,76,255,0.4)]">
+            TS
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold tracking-tight text-lg text-[var(--porcelain)]">
-                ThermoSense <span className="text-[var(--ultramarine)]">AI</span>
+            <div className="flex items-center gap-3">
+              <span className="font-extrabold text-lg tracking-tight text-white uppercase font-display">
+                ThermoSense <span className="text-[#244CFF]">OS</span>
               </span>
-              <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-[var(--carbon-elevated)] border border-[var(--carbon-border)] text-[var(--vanilla-cream)]">
-                Industrial Heat-Health
+              <span className="text-[11px] font-mono tracking-widest uppercase text-white/50 border border-white/10 px-2 py-0.5">
+                v1.0 CLINICAL
               </span>
             </div>
-            <div className="flex items-center gap-2 text-xs text-neutral-400">
+            <div className="flex items-center gap-2 text-xs font-mono text-white/40 mt-0.5">
               <span
-                className={`inline-block h-2 w-2 rounded-full ${
-                  backendOnline ? 'bg-[var(--neon-jade)] animate-pulse' : 'bg-[var(--cherry-red)]'
+                className={`inline-block h-1.5 w-1.5 rounded-full ${
+                  backendOnline ? 'bg-[#10B981]' : 'bg-[#E72D49]'
                 }`}
               />
-              <span className="font-mono text-[11px]">
-                {backendOnline ? 'SYSTEM CONNECTED (127.0.0.1:8000)' : 'BACKEND OFFLINE'}
-              </span>
+              <span>{backendOnline ? 'BACKEND 127.0.0.1:8000 LIVE' : 'DISCONNECTED'}</span>
             </div>
           </div>
         </div>
 
-        {/* Tactical Navigation Tabs */}
-        <nav className="flex items-center gap-1 bg-[var(--carbon-base)] p-1 rounded-xl border border-[var(--carbon-border)]">
+        {/* Tab Switcher - Clean, Sharp, No Fluff */}
+        <div className="flex items-center gap-1 bg-[#14171C] border border-white/10 p-1">
           <button
             onClick={() => setActiveTab('telemetry')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`px-4 py-2 text-xs font-mono uppercase tracking-wider transition-all ${
               activeTab === 'telemetry'
-                ? 'bg-[var(--ultramarine)] text-white shadow-sm'
-                : 'text-neutral-300 hover:text-white hover:bg-[var(--carbon-elevated)]'
+                ? 'bg-[#244CFF] text-white font-bold'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Activity className="h-3.5 w-3.5" />
-            <span>Telemetry Console</span>
+            01 / Telemetry
           </button>
-
           <button
             onClick={() => setActiveTab('environmental')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`px-4 py-2 text-xs font-mono uppercase tracking-wider transition-all ${
               activeTab === 'environmental'
-                ? 'bg-[var(--ultramarine)] text-white shadow-sm'
-                : 'text-neutral-300 hover:text-white hover:bg-[var(--carbon-elevated)]'
+                ? 'bg-[#244CFF] text-white font-bold'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
           >
-            <CloudSun className="h-3.5 w-3.5" />
-            <span>Mode B Environmental</span>
+            02 / Mode B Environment
           </button>
-
           <button
             onClick={() => setActiveTab('hydration')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`px-4 py-2 text-xs font-mono uppercase tracking-wider transition-all ${
               activeTab === 'hydration'
-                ? 'bg-[var(--ultramarine)] text-white shadow-sm'
-                : 'text-neutral-300 hover:text-white hover:bg-[var(--carbon-elevated)]'
+                ? 'bg-[#244CFF] text-white font-bold'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Droplets className="h-3.5 w-3.5" />
-            <span>Hydration Station</span>
+            03 / Hydration
           </button>
-
           <button
             onClick={() => setActiveTab('workers')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`px-4 py-2 text-xs font-mono uppercase tracking-wider transition-all ${
               activeTab === 'workers'
-                ? 'bg-[var(--ultramarine)] text-white shadow-sm'
-                : 'text-neutral-300 hover:text-white hover:bg-[var(--carbon-elevated)]'
+                ? 'bg-[#244CFF] text-white font-bold'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Users className="h-3.5 w-3.5" />
-            <span>Worker Roster</span>
+            04 / Roster
           </button>
-        </nav>
+        </div>
 
-        {/* Utility Actions: Privacy Mode + Incident Alert Drawer Trigger */}
-        <div className="flex items-center gap-2">
-          {/* Privacy Toggle */}
+        {/* Actions */}
+        <div className="flex items-center gap-3">
           <button
             onClick={() => setPrivacyMode(!privacyMode)}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-mono transition-colors ${
+            className={`px-3 py-2 text-xs font-mono uppercase flex items-center gap-2 border transition-all ${
               privacyMode
-                ? 'border-[var(--neon-jade)] text-[var(--neon-jade)] bg-[var(--neon-jade)]/10'
-                : 'border-[var(--carbon-border)] text-neutral-400 hover:text-white hover:bg-[var(--carbon-elevated)]'
+                ? 'border-[#10B981] text-[#10B981] bg-[#10B981]/10'
+                : 'border-white/10 text-white/50 hover:text-white hover:border-white/20'
             }`}
-            title="Privacy Mode masks worker names to badge numbers on display"
           >
             {privacyMode ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-            <span className="hidden sm:inline">Privacy: {privacyMode ? 'ON' : 'OFF'}</span>
+            <span>Privacy {privacyMode ? 'ON' : 'OFF'}</span>
           </button>
 
-          {/* Incident Drawer Button */}
           <button
             onClick={openAlertsDrawer}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all relative ${
+            className={`px-4 py-2 text-xs font-mono uppercase font-bold flex items-center gap-2 transition-all ${
               activeAlertCount > 0
-                ? 'bg-[var(--cherry-red)] text-white border-[var(--cherry-red)] shadow-[0_0_12px_var(--cherry-red-glow)] animate-pulse'
-                : 'bg-[var(--carbon-elevated)] text-[var(--porcelain)] border-[var(--carbon-border)] hover:bg-[var(--carbon-border)]'
+                ? 'bg-[#E72D49] text-white animate-pulse'
+                : 'bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white'
             }`}
           >
             <ShieldAlert className="h-3.5 w-3.5" />
-            <span>Safety Alerts</span>
-            {activeAlertCount > 0 && (
-              <span className="ml-1 bg-white text-[var(--cherry-red)] text-[10px] font-bold px-1.5 rounded-full">
-                {activeAlertCount}
-              </span>
-            )}
+            <span>Alerts ({activeAlertCount})</span>
           </button>
         </div>
       </div>

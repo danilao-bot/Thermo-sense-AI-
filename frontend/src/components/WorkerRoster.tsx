@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Users, UserPlus, ShieldCheck, Check } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Worker } from '@/types/api';
 
@@ -11,9 +10,6 @@ interface WorkerRosterProps {
 
 export const WorkerRoster: React.FC<WorkerRosterProps> = ({ privacyMode }) => {
   const [workers, setWorkers] = useState<Worker[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  // Form State
   const [badgeId, setBadgeId] = useState<string>('W-204');
   const [fullName, setFullName] = useState<string>('Marcus Vance');
   const [age, setAge] = useState<number>(34);
@@ -27,9 +23,7 @@ export const WorkerRoster: React.FC<WorkerRosterProps> = ({ privacyMode }) => {
       const data = await api.listWorkers();
       setWorkers(data);
     } catch (err) {
-      console.error('Failed to list workers:', err);
-    } finally {
-      setLoading(false);
+      console.error(err);
     }
   };
 
@@ -52,163 +46,157 @@ export const WorkerRoster: React.FC<WorkerRosterProps> = ({ privacyMode }) => {
       setBadgeId(`W-${Math.floor(100 + Math.random() * 900)}`);
       fetchWorkers();
     } catch (err) {
-      console.error('Failed to create worker:', err);
+      console.error(err);
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-[var(--carbon-surface)] p-6 rounded-2xl border border-[var(--carbon-border)] flex items-center justify-between">
-        <div>
-          <span className="text-xs font-mono uppercase text-neutral-400">
-            Occupational Registry
-          </span>
-          <h2 className="text-xl font-bold text-[var(--porcelain)]">
-            Worker Profiles & Acclimation Roster
-          </h2>
-          <p className="text-xs text-neutral-400 mt-1">
-            Tracks individual physiological baselines, heat acclimation states, and active shift
-            assignments.
-          </p>
-        </div>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="border-b border-white/10 pb-8">
+        <span className="text-xs font-mono uppercase tracking-widest text-[#244CFF]">
+          Occupational Personnel
+        </span>
+        <h1 className="text-4xl lg:text-5xl font-black text-white uppercase tracking-tight font-display mt-2">
+          Industrial Worker Roster.
+        </h1>
+        <p className="text-sm font-mono text-white/50 max-w-2xl mt-2">
+          Registered worker profiles, baseline biometric mass, and thermal acclimation ratings.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left: Registration Form (4 cols) */}
-        <div className="lg:col-span-4 bg-[var(--carbon-surface)] p-6 rounded-2xl border border-[var(--carbon-border)]">
-          <h3 className="text-sm font-semibold text-[var(--porcelain)] border-b border-[var(--carbon-border)] pb-2 mb-4 flex items-center gap-2">
-            <UserPlus className="h-4 w-4 text-[var(--ultramarine)]" />
-            <span>Register New Worker</span>
-          </h3>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Form (4 cols) */}
+        <div className="lg:col-span-4 bg-[#14171C] border border-white/10 p-8 space-y-6">
+          <span className="text-xs font-mono uppercase tracking-widest text-white/40 block">
+            Add Worker
+          </span>
 
-          <form onSubmit={handleCreate} className="space-y-3 text-xs font-mono">
+          <form onSubmit={handleCreate} className="space-y-4 text-xs font-mono">
             <div>
-              <label className="block text-neutral-400 mb-1">BADGE ID</label>
+              <label className="block text-white/50 mb-1">BADGE ID</label>
               <input
                 type="text"
                 value={badgeId}
                 onChange={(e) => setBadgeId(e.target.value)}
-                className="w-full bg-[var(--carbon-elevated)] border border-[var(--carbon-border)] rounded-lg p-2 text-[var(--porcelain)] font-bold"
+                className="w-full bg-[#0D0F12] border border-white/10 p-3 text-white focus:border-[#244CFF] outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-neutral-400 mb-1">FULL NAME</label>
+              <label className="block text-white/50 mb-1">FULL NAME</label>
               <input
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full bg-[var(--carbon-elevated)] border border-[var(--carbon-border)] rounded-lg p-2 text-[var(--porcelain)]"
+                className="w-full bg-[#0D0F12] border border-white/10 p-3 text-white focus:border-[#244CFF] outline-none"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-neutral-400 mb-1">AGE (Yrs)</label>
+                <label className="block text-white/50 mb-1">AGE</label>
                 <input
                   type="number"
                   value={age}
                   onChange={(e) => setAge(Number(e.target.value))}
-                  className="w-full bg-[var(--carbon-elevated)] border border-[var(--carbon-border)] rounded-lg p-2 text-[var(--porcelain)]"
+                  className="w-full bg-[#0D0F12] border border-white/10 p-3 text-white focus:border-[#244CFF] outline-none"
                 />
               </div>
               <div>
-                <label className="block text-neutral-400 mb-1">SEX</label>
+                <label className="block text-white/50 mb-1">SEX</label>
                 <select
                   value={sex}
                   onChange={(e) => setSex(e.target.value)}
-                  className="w-full bg-[var(--carbon-elevated)] border border-[var(--carbon-border)] rounded-lg p-2 text-[var(--porcelain)]"
+                  className="w-full bg-[#0D0F12] border border-white/10 p-3 text-white focus:border-[#244CFF] outline-none"
                 >
-                  <option value="M">Male (M)</option>
-                  <option value="F">Female (F)</option>
+                  <option value="M">M</option>
+                  <option value="F">F</option>
                 </select>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-neutral-400 mb-1">MASS (kg)</label>
+                <label className="block text-white/50 mb-1">MASS (KG)</label>
                 <input
                   type="number"
                   value={mass}
                   onChange={(e) => setMass(Number(e.target.value))}
-                  className="w-full bg-[var(--carbon-elevated)] border border-[var(--carbon-border)] rounded-lg p-2 text-[var(--porcelain)]"
+                  className="w-full bg-[#0D0F12] border border-white/10 p-3 text-white focus:border-[#244CFF] outline-none"
                 />
               </div>
               <div>
-                <label className="block text-neutral-400 mb-1">HEIGHT (cm)</label>
+                <label className="block text-white/50 mb-1">HEIGHT (CM)</label>
                 <input
                   type="number"
                   value={height}
                   onChange={(e) => setHeight(Number(e.target.value))}
-                  className="w-full bg-[var(--carbon-elevated)] border border-[var(--carbon-border)] rounded-lg p-2 text-[var(--porcelain)]"
+                  className="w-full bg-[#0D0F12] border border-white/10 p-3 text-white focus:border-[#244CFF] outline-none"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-neutral-400 mb-1">ACCLIMATION STATUS</label>
+              <label className="block text-white/50 mb-1">ACCLIMATION LEVEL</label>
               <select
                 value={acclimation}
                 onChange={(e) => setAcclimation(Number(e.target.value))}
-                className="w-full bg-[var(--carbon-elevated)] border border-[var(--carbon-border)] rounded-lg p-2 text-[var(--porcelain)]"
+                className="w-full bg-[#0D0F12] border border-white/10 p-3 text-white focus:border-[#244CFF] outline-none"
               >
-                <option value={0}>0 — Unacclimated</option>
-                <option value={1}>1 — Short-Term Acclimated</option>
-                <option value={2}>2 — Long-Term / Highly Acclimated</option>
+                <option value={0}>Tier 0 — Unacclimated</option>
+                <option value={1}>Tier 1 — Moderate Acclimation</option>
+                <option value={2}>Tier 2 — High Acclimation</option>
               </select>
             </div>
 
             <button
               type="submit"
-              className="w-full mt-2 bg-[var(--ultramarine)] hover:bg-[var(--ultramarine-hover)] text-white font-semibold py-2.5 rounded-xl transition-all"
+              className="w-full bg-[#244CFF] hover:bg-[#1b3ad8] text-white font-mono text-xs uppercase font-bold tracking-wider py-4 mt-2 transition-all"
             >
-              Add to Active Roster
+              Register Badge
             </button>
           </form>
         </div>
 
-        {/* Right: Roster Table (8 cols) */}
-        <div className="lg:col-span-8 bg-[var(--carbon-surface)] p-6 rounded-2xl border border-[var(--carbon-border)] flex flex-col justify-between">
+        {/* Table (8 cols) */}
+        <div className="lg:col-span-8 bg-[#14171C] border border-white/10 p-8 flex flex-col justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-[var(--porcelain)] border-b border-[var(--carbon-border)] pb-2 mb-4 flex items-center gap-2">
-              <Users className="h-4 w-4 text-[var(--ultramarine)]" />
-              <span>Registered Industrial Personnel ({workers.length})</span>
-            </h3>
+            <span className="text-xs font-mono uppercase tracking-widest text-white/40 block mb-6">
+              Active Registry ({workers.length} Personnel)
+            </span>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
                 <thead>
-                  <tr className="border-b border-[var(--carbon-border)] text-neutral-400">
-                    <th className="pb-2">BADGE</th>
-                    <th className="pb-2">WORKER</th>
-                    <th className="pb-2">DEMOGRAPHICS</th>
-                    <th className="pb-2">ACCLIMATION</th>
+                  <tr className="border-b border-white/10 text-white/40">
+                    <th className="pb-3">BADGE</th>
+                    <th className="pb-3">WORKER NAME</th>
+                    <th className="pb-3">METRICS</th>
+                    <th className="pb-3">ACCLIMATION</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[var(--carbon-border)]">
+                <tbody className="divide-y divide-white/5">
                   {workers.map((w) => (
-                    <tr key={w.id} className="hover:bg-[var(--carbon-elevated)]">
-                      <td className="py-2.5 text-[var(--vanilla-cream)] font-bold">
-                        {w.external_id}
-                      </td>
-                      <td className="py-2.5 text-[var(--porcelain)]">
+                    <tr key={w.id} className="hover:bg-white/5">
+                      <td className="py-3 text-white font-bold">{w.external_id}</td>
+                      <td className="py-3 text-white/90">
                         {privacyMode ? `Worker #${w.external_id}` : w.full_name}
                       </td>
-                      <td className="py-2.5 text-neutral-400">
+                      <td className="py-3 text-white/40">
                         {w.age_yrs}y • {w.sex} • {w.body_mass_kg}kg • {w.height_cm}cm
                       </td>
-                      <td className="py-2.5">
-                        <span className="px-2 py-0.5 rounded bg-[var(--carbon-elevated)] border border-[var(--carbon-border)] text-[var(--neon-jade)]">
+                      <td className="py-3">
+                        <span className="text-[10px] uppercase font-bold text-[#10B981]">
                           Tier {w.acclimation_status}
                         </span>
                       </td>
                     </tr>
                   ))}
-                  {workers.length === 0 && !loading && (
+                  {workers.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="py-8 text-center text-neutral-500">
-                        No registered workers found. Add one above.
+                      <td colSpan={4} className="py-12 text-center text-white/30">
+                        No workers registered. Add one on the left.
                       </td>
                     </tr>
                   )}
@@ -217,9 +205,9 @@ export const WorkerRoster: React.FC<WorkerRosterProps> = ({ privacyMode }) => {
             </div>
           </div>
 
-          <div className="text-[11px] font-mono text-neutral-400 pt-3 border-t border-[var(--carbon-border)]">
-            Worker records are stored with full parameterization and protected by Row-Level Security.
-          </div>
+          <span className="text-[11px] font-mono text-white/30 pt-6 border-t border-white/10 block mt-6">
+            Database records protected by PostgreSQL Row-Level Security.
+          </span>
         </div>
       </div>
     </div>

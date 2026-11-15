@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Droplets, Scale, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
 import { api } from '@/lib/api';
 import { HydrationResponse } from '@/types/api';
 
@@ -22,146 +21,142 @@ export const HydrationStation: React.FC = () => {
       });
       setHydrationResult(res);
     } catch (err) {
-      console.error('Hydration calc error:', err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-[var(--carbon-surface)] p-6 rounded-2xl border border-[var(--carbon-border)]">
-        <span className="text-xs font-mono uppercase text-neutral-400">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="border-b border-white/10 pb-8">
+        <span className="text-xs font-mono uppercase tracking-widest text-[#244CFF]">
           Model C Mass Balance Engine
         </span>
-        <h2 className="text-xl font-bold text-[var(--porcelain)]">
-          Pre/Post Shift Weigh-In & Fluid Balance Station
-        </h2>
-        <p className="text-xs text-neutral-400 mt-1">
-          Measures acute dehydration through acute body mass delta (Delta mass) and calculates
-          150% fluid replacement volume to restore circulating plasma volume.
+        <h1 className="text-4xl lg:text-5xl font-black text-white uppercase tracking-tight font-display mt-2">
+          Hydration & Sweat Loss Station.
+        </h1>
+        <p className="text-sm font-mono text-white/50 max-w-2xl mt-2">
+          Calculates acute dehydration via acute body mass delta and prescribes 150% fluid
+          volume with sodium buffer to restore intravascular plasma volume.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left: Input Form (6 cols) */}
-        <div className="lg:col-span-6 bg-[var(--carbon-surface)] p-6 rounded-2xl border border-[var(--carbon-border)] space-y-4">
-          <h3 className="text-sm font-semibold text-[var(--porcelain)] border-b border-[var(--carbon-border)] pb-2 flex items-center gap-2">
-            <Scale className="h-4 w-4 text-[var(--ultramarine)]" />
-            <span>Worker Weigh-In Entry</span>
-          </h3>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Input Form (5 cols) */}
+        <div className="lg:col-span-5 bg-[#14171C] border border-white/10 p-8 space-y-6">
+          <span className="text-xs font-mono uppercase tracking-widest text-white/40 block">
+            Weigh-In Input
+          </span>
 
           <div className="space-y-4 text-xs font-mono">
             <div>
-              <label className="block text-neutral-400 mb-1">PRE-SHIFT MASS (kg)</label>
+              <label className="block text-white/50 mb-2 uppercase">PRE-EXPOSURE MASS (KG)</label>
               <input
                 type="number"
                 step="0.1"
                 value={preMass}
                 onChange={(e) => setPreMass(Number(e.target.value))}
-                className="w-full bg-[var(--carbon-elevated)] border border-[var(--carbon-border)] rounded-lg p-2.5 text-[var(--porcelain)] font-bold text-sm"
+                className="w-full bg-[#0D0F12] border border-white/10 p-4 text-white font-mono text-lg font-bold focus:border-[#244CFF] outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-neutral-400 mb-1">POST-SHIFT MASS (kg)</label>
+              <label className="block text-white/50 mb-2 uppercase">POST-EXPOSURE MASS (KG)</label>
               <input
                 type="number"
                 step="0.1"
                 value={postMass}
                 onChange={(e) => setPostMass(Number(e.target.value))}
-                className="w-full bg-[var(--carbon-elevated)] border border-[var(--carbon-border)] rounded-lg p-2.5 text-[var(--porcelain)] font-bold text-sm"
+                className="w-full bg-[#0D0F12] border border-white/10 p-4 text-white font-mono text-lg font-bold focus:border-[#244CFF] outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-neutral-400 mb-1">EXPOSURE DURATION (Minutes)</label>
+              <label className="block text-white/50 mb-2 uppercase">EXPOSURE TIME (MINUTES)</label>
               <input
                 type="number"
                 value={durationMin}
                 onChange={(e) => setDurationMin(Number(e.target.value))}
-                className="w-full bg-[var(--carbon-elevated)] border border-[var(--carbon-border)] rounded-lg p-2.5 text-[var(--porcelain)] font-bold text-sm"
+                className="w-full bg-[#0D0F12] border border-white/10 p-4 text-white font-mono text-lg font-bold focus:border-[#244CFF] outline-none"
               />
             </div>
 
             <button
               onClick={calculate}
               disabled={loading}
-              className="w-full mt-4 bg-[var(--ultramarine)] hover:bg-[var(--ultramarine-hover)] text-white font-semibold py-3 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm"
+              className="w-full bg-[#244CFF] hover:bg-[#1b3ad8] text-white font-mono text-xs uppercase font-bold tracking-wider py-4 mt-4 transition-all"
             >
-              <span>{loading ? 'Evaluating Balance...' : 'Calculate Rehydration Target'}</span>
-              <ArrowRight className="h-4 w-4" />
+              {loading ? 'Evaluating...' : 'Compute Fluid Replacement Target'}
             </button>
           </div>
         </div>
 
-        {/* Right: Output Diagnostics (6 cols) */}
-        <div className="lg:col-span-6 bg-[var(--carbon-surface)] p-6 rounded-2xl border border-[var(--carbon-border)] flex flex-col justify-between">
+        {/* Output Diagnostic (7 cols) */}
+        <div className="lg:col-span-7 bg-[#14171C] border border-white/10 p-8 flex flex-col justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-[var(--porcelain)] border-b border-[var(--carbon-border)] pb-2 mb-4 flex items-center gap-2">
-              <Droplets className="h-4 w-4 text-[var(--ultramarine)]" />
-              <span>Fluid Deficit & Replacement Protocol</span>
-            </h3>
+            <div className="border-b border-white/10 pb-4 mb-6 flex items-center justify-between">
+              <span className="text-xs font-mono uppercase tracking-widest text-white/40">
+                Fluid Deficit Diagnostics
+              </span>
+              {hydrationResult && (
+                <span
+                  className={`text-xs font-mono uppercase px-3 py-1 font-bold ${
+                    hydrationResult.body_mass_loss_pct > 2.0
+                      ? 'bg-[#E72D49] text-white'
+                      : 'bg-[#10B981] text-white'
+                  }`}
+                >
+                  {hydrationResult.hydration_status}
+                </span>
+              )}
+            </div>
 
             {hydrationResult ? (
-              <div className="space-y-4">
-                {/* Metric Summary Card */}
-                <div className="grid grid-cols-2 gap-3 text-center">
-                  <div className="p-4 bg-[var(--carbon-elevated)] rounded-xl border border-[var(--carbon-border)]">
-                    <span className="text-[10px] font-mono text-neutral-400 uppercase">
-                      Body Mass Loss %
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-[#0D0F12] border border-white/10 p-6 text-center">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-white/40 block">
+                      BODY MASS LOSS
                     </span>
-                    <div className="text-2xl font-bold tabular-nums text-[var(--porcelain)] mt-1">
+                    <div className="text-4xl font-black text-white font-display tabular-nums mt-2">
                       {hydrationResult.body_mass_loss_pct.toFixed(1)}%
                     </div>
                   </div>
 
-                  <div className="p-4 bg-[var(--carbon-elevated)] rounded-xl border border-[var(--carbon-border)]">
-                    <span className="text-[10px] font-mono text-neutral-400 uppercase">
-                      Fluid Deficit (Sweat Lost)
+                  <div className="bg-[#0D0F12] border border-white/10 p-6 text-center">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-white/40 block">
+                      SWEAT VOLUME LOST
                     </span>
-                    <div className="text-2xl font-bold tabular-nums text-[var(--ultramarine)] mt-1">
+                    <div className="text-4xl font-black text-[#244CFF] font-display tabular-nums mt-2">
                       {hydrationResult.fluid_loss_liters.toFixed(2)} L
                     </div>
                   </div>
                 </div>
 
-                {/* Status Alert Pill */}
-                <div
-                  className={`p-3 rounded-xl border flex items-center gap-2 text-xs font-mono ${
-                    hydrationResult.body_mass_loss_pct > 2.0
-                      ? 'border-[var(--cherry-red)] bg-[var(--cherry-red)]/10 text-white'
-                      : 'border-[var(--neon-jade)] bg-[var(--neon-jade)]/10 text-[var(--neon-jade)]'
-                  }`}
-                >
-                  <AlertCircle className="h-4 w-4 shrink-0" />
-                  <span>Status: {hydrationResult.hydration_status}</span>
-                </div>
-
-                {/* Rehydration Directive */}
-                <div className="p-4 bg-[var(--carbon-base)] rounded-xl border border-[var(--carbon-border)] space-y-1">
-                  <span className="text-xs font-mono uppercase text-neutral-400">
-                    Target Electrolyte Replacement
+                <div className="bg-[#0D0F12] border border-white/10 p-6 space-y-2">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-white/40 block">
+                    150% REHYDRATION TARGET
                   </span>
-                  <div className="text-base font-bold text-[var(--vanilla-cream)]">
+                  <div className="text-2xl font-black text-white font-display">
                     {(hydrationResult.fluid_loss_liters * 1.5).toFixed(2)} Liters Required
                   </div>
-                  <p className="text-xs text-neutral-400">
+                  <p className="text-xs font-mono text-white/60 leading-relaxed mt-2">
                     {hydrationResult.recommended_hydration}
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="h-48 flex flex-col items-center justify-center text-center text-neutral-400 text-xs">
-                <Scale className="h-8 w-8 mb-2 opacity-50 text-[var(--ultramarine)]" />
-                <span>Enter pre/post shift weigh-in values to calculate fluid deficit.</span>
+              <div className="py-20 text-center font-mono text-xs text-white/30 uppercase tracking-widest">
+                Awaiting Weigh-In Computation
               </div>
             )}
           </div>
 
-          <div className="text-[11px] font-mono text-neutral-400 pt-3 border-t border-[var(--carbon-border)]">
-            Prescribes ISO 15265 / Moran hydration deficit math with sodium replenishment buffer.
-          </div>
+          <span className="text-[11px] font-mono text-white/30 pt-6 border-t border-white/10 block mt-6">
+            Follows Moran / Sawka mass conservation protocols.
+          </span>
         </div>
       </div>
     </div>
