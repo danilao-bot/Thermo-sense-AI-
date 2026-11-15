@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+:root {
+  /* ThermoSense AI Industrial Palette (Palette 5 Carbon/Porcelain x Palette 4 Precision) */
+  --carbon-base: #17191d;
+  --carbon-surface: #0f1114;
+  --carbon-elevated: #22262c;
+  --carbon-border: #2e343d;
+
+  --porcelain: #e8ebed;
+  --vanilla-cream: #fff5d9;
+  --ultramarine: #244cff;
+  --ultramarine-hover: #1b3ad8;
+  --cherry-red: #e72d49;
+  --cherry-red-glow: rgba(231, 45, 73, 0.25);
+  --sugar-violet: #9470db;
+  --neon-jade: #10b981;
+  --acid-amber: #f59e0b;
+}
+
+@theme {
+  --color-carbon-base: var(--carbon-base);
+  --color-carbon-surface: var(--carbon-surface);
+  --color-carbon-elevated: var(--carbon-elevated);
+  --color-carbon-border: var(--carbon-border);
+
+  --color-porcelain: var(--porcelain);
+  --color-vanilla-cream: var(--vanilla-cream);
+  --color-ultramarine: var(--ultramarine);
+  --color-ultramarine-hover: var(--ultramarine-hover);
+  --color-cherry-red: var(--cherry-red);
+  --color-cherry-red-glow: var(--cherry-red-glow);
+  --color-sugar-violet: var(--sugar-violet);
+  --color-neon-jade: var(--neon-jade);
+  --color-acid-amber: var(--acid-amber);
+}
+
+body {
+  background-color: var(--carbon-base);
+  color: var(--porcelain);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tabular numbers for telemetry tickers to eliminate layout jitter */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
