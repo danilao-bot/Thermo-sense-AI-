@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { ShieldAlert, Eye, EyeOff } from 'lucide-react';
 
 interface HeaderProps {
@@ -27,12 +28,15 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Clean Brand Lockup - Just THERMOSENSE */}
         <div className="flex items-center gap-3">
-          <span className="font-extrabold text-xl tracking-tight text-white uppercase font-display">
+          <Link
+            href="/"
+            className="font-extrabold text-xl tracking-tight text-white uppercase font-display hover:text-[#244CFF] transition-colors"
+          >
             THERMOSENSE
-          </span>
+          </Link>
           <span className="flex items-center gap-1.5 text-xs font-mono text-white/40 ml-2">
             <span
-              className={`inline-block h-1.5 w-1.5 rounded-full ${
+              className={`inline-block h-1.5 w-1.5 ${
                 backendOnline ? 'bg-[#10B981]' : 'bg-[#E72D49]'
               }`}
             />
