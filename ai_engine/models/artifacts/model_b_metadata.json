@@ -1,0 +1,76 @@
+{
+  "model_name": "Model B \u2014 Environmental Heat Risk & PWC Loss Regressor",
+  "algorithm": "XGBoost Regressor",
+  "target": "pwc_loss_pct",
+  "n_training_samples": 975,
+  "validation_strategy": "5-Fold Cross-Validation",
+  "metrics": {
+    "overall_mae_pct": 1.7650721006215766,
+    "overall_rmse_pct": 2.3000313043385203,
+    "overall_r2": 0.987133209929284
+  },
+  "top_features": [
+    {
+      "feature": "heat_index_C",
+      "importance": 0.7088077738881111
+    },
+    {
+      "feature": "WBGT_estimated_C",
+      "importance": 0.20490729063749313
+    },
+    {
+      "feature": "air_temp_C",
+      "importance": 0.030492876190692186
+    },
+    {
+      "feature": "work_duration_min",
+      "importance": 0.010055034654214978
+    },
+    {
+      "feature": "vapor_pressure_hpa",
+      "importance": 0.009877751115709543
+    },
+    {
+      "feature": "clothing_clo",
+      "importance": 0.008489682688377798
+    },
+    {
+      "feature": "evaporative_cooling_potential",
+      "importance": 0.005520105303730816
+    },
+    {
+      "feature": "acclimation_status",
+      "importance": 0.004018481238745153
+    },
+    {
+      "feature": "wind_speed_m_s",
+      "importance": 0.0032529250893276185
+    },
+    {
+      "feature": "solar_clothing_interaction",
+      "importance": 0.003044599754502997
+    }
+  ],
+  "feature_list": [
+    "air_temp_C",
+    "relative_humidity_pct",
+    "wind_speed_m_s",
+    "solar_radiation_W_m2",
+    "clothing_clo",
+    "heat_index_C",
+    "vapor_pressure_hpa",
+    "WBGT_estimated_C",
+    "evaporative_cooling_potential",
+    "solar_clothing_interaction",
+    "thermal_load_index",
+    "env_risk_category",
+    "work_duration_min",
+    "age_yrs",
+    "sex",
+    "body_mass_kg",
+    "vo2peak_ml_kg_min",
+    "fitness_factor",
+    "acclimation_status",
+    "training_status"
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "model_name": "Model A \u2014 Physiological Core Temperature Regressor",
+  "algorithm": "XGBoost Regressor",
+  "target": "core_temp_C",
+  "n_training_samples": 17448,
+  "n_participants": 61,
+  "validation_strategy": "Participant-Disjoint GroupKFold (5-fold)",
+  "metrics": {
+    "overall_mae_C": 0.19922196793605906,
+    "overall_rmse_C": 0.25240214763716085,
+    "overall_r2": 0.7964358161812346,
+    "overall_pearson_r": 0.8928907441386675,
+    "pct_within_0_3C": 78.03186611646034,
+    "pct_within_0_5C": 94.61829436038515
+  },
+  "top_features": [
+    {
+      "feature": "work_duration_min",
+      "importance": 0.3645670562982559
+    },
+    {
+      "feature": "heart_rate_bpm_rolling_mean_30m",
+      "importance": 0.1559945773333311
+    },
+    {
+      "feature": "skin_temp_mean_C_rolling_mean_15m",
+      "importance": 0.061709643341600895
+    },
+    {
+      "feature": "heart_rate_bpm_rolling_max_15m",
+      "importance": 0.03911547805182636
+    },
+    {
+      "feature": "cumulative_cardiac_strain_min",
+      "importance": 0.03885154612362385
+    },
+    {
+      "feature": "heart_rate_bpm_rolling_mean_15m",
+      "importance": 0.031226952327415347
+    },
+    {
+      "feature": "skin_temp_mean_C_rolling_mean_5m",
+      "importance": 0.025532622821629047
+    },
+    {
+      "feature": "age_yrs",
+      "importance": 0.01412271335721016
+    },
+    {
+      "feature": "body_fat_pct",
+      "importance": 0.012334129773080349
+    },
+    {
+      "feature": "skin_temp_abdomen_C",
+      "importance": 0.011582701466977596
+    },
+    {
+      "feature": "env_risk_category",
+      "importance": 0.010548351798206568
+    },
+    {
+      "feature": "body_mass_kg",
+      "importance": 0.01043696771375835
+    },
+    {
+      "feature": "height_cm",
+      "importance": 0.010135598480701447
+    },
+    {
+      "feature": "under_clothing_rh_pct",
+      "importance": 0.009263161453418434
+    },
+    {
+      "feature": "acclimation_status",
+      "importance": 0.009125069598667324
+    }
+  ],
+  "feature_list": [
+    "age_yrs",
+    "sex",
+    "body_mass_kg",
+    "height_cm",
+    "bmi_kg_m2",
+    "body_fat_pct",
+    "vo2peak_ml_kg_min",
+    "acclimation_status",
+    "training_status",
+    "fitness_factor",
+    "BMI_risk_factor",
+    "heart_rate_bpm",
+    "breathing_rate_bpm",
+    "skin_temp_mean_C",
+    "skin_temp_chest_C",
+    "skin_temp_abdomen_C",
+    "skin_temp_calf_C",
+    "spo2_pct",
+    "steps_per_min",
+    "hrv_rmssd_ms",
+    "heart_rate_bpm_rolling_mean_5m",
+    "heart_rate_bpm_rolling_mean_10m",
+    "heart_rate_bpm_rolling_mean_15m",
+    "heart_rate_bpm_rolling_mean_30m",
+    "heart_rate_bpm_rolling_std_5m",
+    "heart_rate_bpm_rolling_std_15m",
+    "heart_rate_bpm_rolling_max_15m",
+    "heart_rate_bpm_rate_of_change",
+    "heart_rate_bpm_acceleration",
+    "heart_rate_bpm_deviation_from_baseline",
+    "skin_temp_mean_C_rolling_mean_5m",
+    "skin_temp_mean_C_rolling_mean_15m",
+    "skin_temp_mean_C_rate_of_change",
+    "skin_temp_mean_C_deviation_from_baseline",
+    "breathing_rate_bpm_rolling_mean_15m",
+    "breathing_rate_bpm_rate_of_change",
+    "HR_pct_of_max",
+    "HR_reserve_used_pct",
+    "HR_efficiency_ratio",
+    "cumulative_cardiac_strain_min",
+    "air_temp_C",
+    "relative_humidity_pct",
+    "wind_speed_m_s",
+    "solar_radiation_W_m2",
+    "clothing_clo",
+    "under_clothing_temp_C",
+    "under_clothing_rh_pct",
+    "heat_index_C",
+    "vapor_pressure_hpa",
+    "WBGT_estimated_C",
+    "evaporative_cooling_potential",
+    "solar_clothing_interaction",
+    "thermal_load_index",
+    "env_risk_category",
+    "activity_code",
+    "work_duration_min",
+    "rpe"
+  ]
+}
