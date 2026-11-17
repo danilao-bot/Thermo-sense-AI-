@@ -33,6 +33,10 @@ export default function LandingPage() {
     setIsLegalOpen(true);
   };
 
+  const apiDocsUrl = typeof window !== 'undefined'
+    ? `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/docs`
+    : 'http://127.0.0.1:8000/docs';
+
   // Gentle simulated telemetry ticker for the tactical HUD
   useEffect(() => {
     const interval = setInterval(() => {
@@ -120,7 +124,7 @@ export default function LandingPage() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <a
-                  href="http://127.0.0.1:8000/docs"
+                  href={apiDocsUrl}
                   target="_blank"
                   rel="noreferrer"
                   className="bg-transparent hover:bg-white/5 text-white/70 hover:text-white font-mono uppercase tracking-wider text-sm px-6 py-4 flex items-center justify-center gap-2 border border-white/15 transition-all"
@@ -667,7 +671,7 @@ export default function LandingPage() {
                 Data Erasure
               </button>
               <a
-                href="http://127.0.0.1:8000/docs"
+                href={apiDocsUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-white transition-colors"
