@@ -657,10 +657,16 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
 
               <button
                 type="submit"
+                aria-label="Submit clinical physiological reading"
                 className="w-full bg-white/5 hover:bg-white/10 border border-white/15 text-white font-mono text-xs uppercase py-2.5 px-4 tracking-wider transition-colors"
               >
                 Submit Clinical Reading
               </button>
+
+              <div className="pt-2 border-t border-white/5 flex items-center gap-1.5 text-[10px] font-mono text-white/40">
+                <ShieldCheck className="h-3 w-3 text-emerald-400 shrink-0" />
+                <span>Data Minimization: Only physiological telemetry is logged. No personal data stored.</span>
+              </div>
             </form>
           </div>
         </div>

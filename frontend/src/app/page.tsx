@@ -18,12 +18,20 @@ import {
   ChevronRight,
   FileCode,
 } from 'lucide-react';
+import { LegalModal } from '@/components/LegalModal';
 
 export default function LandingPage() {
   const [activeModelTab, setActiveModelTab] = useState<'A' | 'B' | 'C' | 'D'>('A');
   const [simulatedHeartRate, setSimulatedHeartRate] = useState<number>(132);
   const [simulatedCoreTemp, setSimulatedCoreTemp] = useState<number>(37.82);
   const [packetTick, setPacketTick] = useState<number>(942);
+  const [isLegalOpen, setIsLegalOpen] = useState<boolean>(false);
+  const [legalTab, setLegalTab] = useState<'privacy' | 'terms' | 'cookies' | 'data-deletion'>('privacy');
+
+  const openLegalWithTab = (tab: 'privacy' | 'terms' | 'cookies' | 'data-deletion') => {
+    setLegalTab(tab);
+    setIsLegalOpen(true);
+  };
 
   // Gentle simulated telemetry ticker for the tactical HUD
   useEffect(() => {
@@ -622,25 +630,65 @@ export default function LandingPage() {
       </main>
 
       {/* FOOTER */}
-      <footer className="border-t border-white/10 bg-[#0D0F12] px-6 lg:px-12 py-6">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-white/40">
-          <span className="font-bold text-white/60">THERMOSENSE</span>
-          <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="hover:text-white transition-colors">
-              Dashboard
-            </Link>
-            <a
-              href="http://127.0.0.1:8000/docs"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-white transition-colors"
-            >
-              API Docs
-            </a>
-            <span>2026 THERMOSENSE</span>
+      <footer className="border-t border-white/10 bg-[#0D0F12] px-6 lg:px-12 py-8">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono text-white/40">
+            <div className="flex items-center gap-3">
+              <span className="font-bold text-white tracking-wider">THERMOSENSE AI</span>
+              <span className="text-white/20">•</span>
+              <span>Occupational Heat-Health & Thermal Safety Surveillance</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-6">
+              <Link href="/dashboard" className="hover:text-white transition-colors">
+                Live Console
+              </Link>
+              <button
+                onClick={() => openLegalWithTab('privacy')}
+                className="hover:text-white transition-colors"
+              >
+                Privacy Policy
+              </button>
+              <button
+                onClick={() => openLegalWithTab('terms')}
+                className="hover:text-white transition-colors"
+              >
+                Terms of Service
+              </button>
+              <button
+                onClick={() => openLegalWithTab('cookies')}
+                className="hover:text-white transition-colors"
+              >
+                Cookies & Storage
+              </button>
+              <button
+                onClick={() => openLegalWithTab('data-deletion')}
+                className="text-red-400 hover:text-red-300 transition-colors"
+              >
+                Data Erasure
+              </button>
+              <a
+                href="http://127.0.0.1:8000/docs"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-white transition-colors"
+              >
+                API Docs
+              </a>
+            </div>
+          </div>
+
+          <div className="border-t border-white/5 pt-4 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-white/30 gap-2">
+            <span>Calibrated against ISO 7243:2017 & OSHA 29 CFR 1910 standards. Not a medical diagnostic substitute.</span>
+            <span>© 2026 THERMOSENSE • Zero Advertising Trackers</span>
           </div>
         </div>
       </footer>
+
+      <LegalModal
+        isOpen={isLegalOpen}
+        onClose={() => setIsLegalOpen(false)}
+        defaultTab={legalTab}
+      />
     </div>
   );
 }
