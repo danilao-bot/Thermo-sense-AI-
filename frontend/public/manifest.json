@@ -1,0 +1,23 @@
+{
+  "name": "THERMOSENSE AI - Heat-Health Early Warning",
+  "short_name": "THERMOSENSE",
+  "description": "Continuous non-invasive core body temperature estimation and occupational heat-strain monitoring",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D0F12",
+  "theme_color": "#244CFF",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

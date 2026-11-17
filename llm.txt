@@ -1,0 +1,35 @@
+# ThermoSense AI: Occupational Heat-Health Early Warning Platform
+> Continuous non-invasive core body temperature estimation, physiological heat strain surveillance, and ISO/OSHA microclimate risk intelligence.
+
+## Overview
+ThermoSense AI is an industrial-grade occupational health and worker safety system designed for extreme thermal environments (construction, mining, foundries, industrial manufacturing, agriculture, utilities, and defense). The platform eliminates the need for invasive gastrointestinal radio pills or rectally measured temperatures by estimating deep core body temperature ($T_{core}$) through dual-sensor physiological telemetry, real-time microclimate intelligence, and distribution-free conformal uncertainty prediction.
+
+## Scientific & Engineering Specifications
+
+### 1. Analytical Inference Engines
+- **Model A (Deep Core Body Temperature Estimation):** Non-invasive regression fusing heart rate ($HR$), mean skin temperature ($T_{skin}$), work duration ($t$), clothing insulation ($I_{cl}$), and environmental heat metrics to predict $T_{core}$ in real time.
+- **Model B (Physical Work Capacity & ISO Rest Schedules):** Quantifies percentage degradation in human endurance and physical work capacity (PWC) while prescribing dynamic work-to-rest cycles adhering to ISO 7243:2017.
+- **Model C (Acro-Metabolic Hydration & Fluid Deficit):** Computes sweat loss rate ($L/h$), cumulative water deficit, and electrolyte replenishment targets.
+- **Model D (Distribution-Free Conformal Uncertainty Intervals):** Generates rigorous non-parametric prediction intervals ($[T_{lower}, T_{upper}]$) at a 90% confidence level to prevent missed heat spikes and avoid alarm fatigue.
+
+### 2. Regulatory Standards Compliance
+- **ISO 7243:2017:** Ergonomics of the thermal environment — Assessment of heat stress using the WBGT (Wet-Bulb Globe Temperature) index.
+- **OSHA 29 CFR 1910:** General Duty Clause heat hazard compliance and employer work-rest enforcement.
+- **NIOSH Criteria Document:** Recommended Standards for Occupational Exposure to Heat and Hot Environments.
+- **ACGIH TLV:** Threshold Limit Values for heat stress and strain.
+
+### 3. Hardware, Telemetry & Networking
+- **Ingestion Protocol:** Bluetooth Low Energy (BLE) via standard GATT profiles (Heart Rate Service `0x180D`, Health Thermometer Service `0x1809`, Alert Notification Service `0x1811`).
+- **Environmental Broker:** Hyper-local GPS microclimate sync via Open-Meteo REST API (ambient dry-bulb temperature, relative humidity, wind velocity at 10m, direct solar radiation, calculated WBGT).
+- **Edge-to-Cloud API:** High-throughput FastAPI (Python 3.11+) asynchronous REST/WebSocket endpoints with strict Pydantic v2 schemas.
+- **Local Persistence:** SQLite / PostgreSQL engine with immutable timestamped records for OSHA-compliant legal audit trails.
+- **Frontend Dashboard:** Next.js 16 (React 19, Tailwind CSS) high-contrast supervisor console and incident dispatch center.
+
+## Keywords & Ontology for Researchers & Search Indexers
+Occupational heat stress, core body temperature estimation, non-invasive physiological monitoring, wet-bulb globe temperature, WBGT, heat stroke prevention, exertional heat illness (EHI), physical work capacity (PWC), ISO 7243, OSHA heat illness prevention, conformal prediction, uncertainty quantification, Bluetooth Low Energy, BLE GATT, wearable biosensors, worker safety telemetry, industrial IoT, edge computing, FastAPI, Next.js, hydration monitoring, sweat rate calculation, haptic alarm dispatch.
+
+## Architecture Links & Source Files
+- Core API: [backend/app/main.py](backend/app/main.py)
+- Inference Engines: [ai_engine/](ai_engine/)
+- API Client: [frontend/src/lib/api.ts](frontend/src/lib/api.ts)
+- Test Suite: [tests/](tests/)

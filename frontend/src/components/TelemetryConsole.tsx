@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '@/lib/api';
 import { TelemetryEvaluationResponse, WeatherResponse } from '@/types/api';
-import { Bluetooth, BluetoothOff, Activity, AlertTriangle, RefreshCw, Radio, CheckCircle2, User, Thermometer, Heart } from 'lucide-react';
+import { Bluetooth, BluetoothOff, Activity, AlertTriangle, RefreshCw, Radio, CheckCircle2, User, Thermometer, Heart, ShieldCheck, Vibrate } from 'lucide-react';
 
 interface TelemetryConsoleProps {
   privacyMode: boolean;
@@ -17,7 +17,26 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
   // Connection states: 'disconnected' | 'connecting' | 'connected' | 'manual'
   const [deviceStatus, setDeviceStatus] = useState<'disconnected' | 'connecting' | 'connected' | 'manual'>('disconnected');
   const [connectedDeviceName, setConnectedDeviceName] = useState<string | null>(null);
+  const [workerTag, setWorkerTag] = useState<string>('WG-01');
+  const [hapticStatus, setHapticStatus] = useState<'idle' | 'vibrating'>('idle');
   const [bleError, setBleError] = useState<string | null>(null);
+
+  // GATT Alert Characteristic reference for bidirectional haptic commands
+  const alertCharRef = useRef<any>(null);
+
+  // Load or initialize persistent anonymous worker group ID
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const cachedTag = localStorage.getItem('thermosense_worker_tag');
+      if (cachedTag) {
+        setWorkerTag(cachedTag);
+      } else {
+        const randomId = `WG-${Math.floor(10 + Math.random() * 90)}`;
+        localStorage.setItem('thermosense_worker_tag', randomId);
+        setWorkerTag(randomId);
+      }
+    }
+  }, []);
 
   // Physiological Sensor Telemetry (Empty initially)
   const [heartRate, setHeartRate] = useState<number | null>(null);
@@ -96,12 +115,31 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
       setDeviceStatus('connecting');
       const device = await (navigator as any).bluetooth.requestDevice({
         filters: [{ services: ['heart_rate'] }],
-        optionalServices: ['battery_service', 'health_thermometer'],
+        optionalServices: ['battery_service', 'health_thermometer', 'immediate_alert', 0x1802, 0x1811],
       });
 
       const server = await device.gatt.connect();
       const service = await server.getPrimaryService('heart_rate');
       const characteristic = await service.getCharacteristic('heart_rate_measurement');
+
+      // Attempt to bind Immediate Alert Service for bidirectional wrist haptics
+      try {
+        const alertService = await server.getPrimaryService('immediate_alert');
+        const alertChar = await alertService.getCharacteristic('alert_level');
+        alertCharRef.current = alertChar;
+      } catch {
+        // Wearable does not expose immediate_alert; fallback to device vibration
+        alertCharRef.current = null;
+      }
+
+      // Generate or retrieve cached anonymous worker profile for this device
+      const deviceKey = `thermosense_worker_${device.id || 'default'}`;
+      let cachedWorkerTag = localStorage.getItem(deviceKey);
+      if (!cachedWorkerTag) {
+        cachedWorkerTag = localStorage.getItem('thermosense_worker_tag') || `WG-${Math.floor(10 + Math.random() * 90)}`;
+        localStorage.setItem(deviceKey, cachedWorkerTag);
+      }
+      setWorkerTag(cachedWorkerTag);
 
       await characteristic.startNotifications();
       characteristic.addEventListener('characteristicvaluechanged', (event: any) => {
@@ -126,6 +164,7 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
         setHeartRate(null);
         setSkinTemp(null);
         setTelemetryData(null);
+        alertCharRef.current = null;
       });
 
       setConnectedDeviceName(device.name || 'Bluetooth Heart Rate Monitor');
@@ -190,8 +229,33 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
 
         if (isMounted) {
           setTelemetryData(res);
-          if (res.emergency_escalation || res.active_alerts.length > 0) {
+          const isWarning =
+            res.emergency_escalation ||
+            res.safety_status === 'ORANGE' ||
+            res.safety_status === 'RED' ||
+            res.safety_status === 'EMERGENCY_PURPLE';
+
+          if (isWarning || res.active_alerts.length > 0) {
             onAlertTriggered?.();
+
+            // Downstream: Send Haptic Alert to Wearable via BLE GATT
+            if (alertCharRef.current) {
+              try {
+                const alertLevel = res.emergency_escalation || res.safety_status === 'RED' ? 2 : 1;
+                alertCharRef.current.writeValue(new Uint8Array([alertLevel]));
+                setHapticStatus('vibrating');
+                setTimeout(() => setHapticStatus('idle'), 3000);
+              } catch (bleErr) {
+                console.warn('GATT Alert write error:', bleErr);
+              }
+            }
+
+            // Mobile Device Vibration Fallback
+            if (typeof navigator !== 'undefined' && (navigator as any).vibrate) {
+              (navigator as any).vibrate([500, 250, 500, 250, 1000]);
+              setHapticStatus('vibrating');
+              setTimeout(() => setHapticStatus('idle'), 3000);
+            }
           }
         }
       } catch (err) {
@@ -302,7 +366,7 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
 
       {/* Connection & Ambient Status Bar */}
       <div className="bg-[#14171C] border border-white/10 p-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Radio className={`h-4 w-4 ${isConnected ? 'text-emerald-400' : 'text-neutral-500'}`} />
           <span className="text-white/80">
             Device:{' '}
@@ -310,9 +374,23 @@ export const TelemetryConsole: React.FC<TelemetryConsoleProps> = ({
               {connectedDeviceName ? connectedDeviceName : 'None (Disconnected)'}
             </strong>
           </span>
+          <span className="bg-blue-500/10 border border-blue-500/30 text-blue-300 text-[10px] px-2 py-0.5 rounded flex items-center gap-1">
+            <ShieldCheck className="h-3 w-3" />
+            Worker ID: <strong>{workerTag}</strong>
+          </span>
           {isConnected && (
             <span className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] px-2 py-0.5 rounded">
               Live Stream Active
+            </span>
+          )}
+          {isConnected && (
+            <span className={`text-[10px] px-2 py-0.5 rounded flex items-center gap-1 border ${
+              hapticStatus === 'vibrating' 
+                ? 'bg-red-500/20 border-red-500 text-red-300 animate-pulse' 
+                : 'bg-neutral-800 border-white/10 text-white/60'
+            }`}>
+              <Vibrate className="h-3 w-3" />
+              {hapticStatus === 'vibrating' ? 'Haptic Alarm Fired!' : 'Wrist Haptics Ready'}
             </span>
           )}
         </div>

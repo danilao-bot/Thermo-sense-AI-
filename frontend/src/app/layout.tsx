@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 
@@ -14,9 +14,19 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ['400', '500', '700'],
 });
 
+export const viewport: Viewport = {
+  themeColor: '#244CFF',
+};
+
 export const metadata: Metadata = {
   title: 'THERMOSENSE',
   description: 'Occupational Heat-Health & Physiological Strain Monitoring',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'THERMOSENSE',
+  },
   icons: {
     icon: [
       { url: '/icon.svg', type: 'image/svg+xml' },
