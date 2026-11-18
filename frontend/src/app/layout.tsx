@@ -36,6 +36,7 @@ export const metadata: Metadata = {
 };
 
 import { ConsentBanner } from '@/components/ConsentBanner';
+import { KeepAlive } from '@/components/KeepAlive';
 
 export default function RootLayout({
   children,
@@ -47,6 +48,7 @@ export default function RootLayout({
       <body className="bg-[#0D0F12] text-[#E8EBED] min-h-screen selection:bg-[#244CFF] selection:text-white">
         {children}
         <ConsentBanner />
+        <KeepAlive />
       </body>
     </html>
   );
